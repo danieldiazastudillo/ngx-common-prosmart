@@ -27,7 +27,7 @@ jobs:
 
       - name: Build library
         run: npx ng build ngx-separador-miles
-        working-directory: ../../
+        working-directory: ${{ github.workspace }}
 
       - name: Check if version is already published
         id: check_version

@@ -23,7 +23,7 @@ jobs:
 
       - name: Install dependencies (root)
         run: npm ci
-        working-directory: ../../
+        working-directory: ${{ github.workspace }}
 
       - name: Build library
         run: npx ng build ngx-separador-miles

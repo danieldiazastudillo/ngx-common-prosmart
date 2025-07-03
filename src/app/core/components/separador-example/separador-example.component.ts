@@ -5,9 +5,6 @@ import { Highlight } from 'ngx-highlightjs';
 import { HighlightLineNumbers } from 'ngx-highlightjs/line-numbers';
 import { SeparadorMilesAccessor } from 'ngx-separador-miles';
 
-// import 'highlight.js/styles/devibeans.min.css';
-import 'highlight.js/styles/sunburst.min.css';
-
 @Component({
   selector: 'app-separador-example',
   imports: [ReactiveFormsModule, SeparadorMilesAccessor, Highlight, HighlightLineNumbers, JsonPipe],

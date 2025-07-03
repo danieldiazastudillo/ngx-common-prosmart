@@ -27,7 +27,7 @@ jobs:
         run: npx ng build ngx-separador-miles
 
       - name: Build Angular app
-        run: npx ng build --configuration production
+        run: npx ng build --configuration production --base-href /ngx-common-prosmart/
 
       - name: Deploy to GitHub Pages (optional)
         uses: peaceiris/actions-gh-pages@v4

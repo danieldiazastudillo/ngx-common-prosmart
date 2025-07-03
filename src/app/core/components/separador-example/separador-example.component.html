@@ -1,0 +1,37 @@
+<div class="row justify-content-center bg-dark-subtle border border-2 shadow my-3 p-4 rounded-2 ">
+  <div class="col">
+    <h2>separadorMilesAccessor</h2>
+    <p>Permite separar miles en un input de formulario. El valor enviado al formulario va sin formatear. Permite comas para decimales y configurable</p>
+
+    <pre class="shadow-lg my-3 rounded-3">
+      <code [highlight]="bash" language="bash"></code>
+    </pre>
+  </div>
+  <div class="col">
+    <form [formGroup]="form">
+      <label for="example-control" class="form-label">Valor en PESOS (CLP$):</label>
+      <input class="form-control form-control-lg" formControlName="exampleControl" id="example-control"
+        libSeparadorMiles />
+    </form>
+
+    <pre class="shadow-lg my-3 rounded-3">
+      <code [highlight]="form.value | json" language="json" lineNumbers></code>
+    </pre>
+
+  </div>
+</div>
+
+
+<div class="row justify-content-center my-3">
+  <div class="col">
+    <h4>Implementación:</h4>
+    <p><small>La directiva tiene por nombre <strong>libSeparadorMiles</strong></small></p>
+    <pre class="shadow-lg my-3 rounded-3">
+      <code [highlight]="textoImplementacion" language="ts" lineNumbers></code>
+    </pre>
+
+    <pre class="shadow-lg my-3 rounded-3">
+      <code [highlight]="textoTemplate" language="html" lineNumbers></code>
+    </pre>
+  </div>
+</div>

@@ -45,7 +45,7 @@ jobs:
 
       - name: Publish to npm
         if: steps.check_version.outputs.publish == 'true'
-        working-directory: ../../dist/ngx-separador-miles
+        working-directory: ${{ github.workspace }}/dist/ngx-separador-miles
         run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

@@ -33,5 +33,5 @@ jobs:
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist/ngx-common-prosmart
+          publish_dir: ./dist/ngx-common-prosmart/browser
 

@@ -1,34 +1,34 @@
-name: Publish ngx-separador-miles to npm
+name: Publish ngx-rut-v2 to npm
 
 on:
   push:
     branches:
       - main
     paths:
-      - 'projects/ngx-separador-miles/**'
-      - '.github/workflows/publish-library.yml'
+      - 'projects/ngx-rut-v2/**'
+      - '.github/workflows/publish-ngx-rut-v2.yml'
 
 jobs:
   publish:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: projects/ngx-separador-miles
+        working-directory: projects/ngx-rut-v2
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 2
 
-      - name: Check for changes in ngx-separador-miles
+      - name: Check for changes in ngx-rut-v2
         id: check_changes
         run: |
-          if git diff HEAD~1 --name-only | grep -q "^projects/ngx-separador-miles/"; then
+          if git diff HEAD~1 --name-only | grep -q "^projects/ngx-rut-v2/"; then
             echo "changes=true" >> $GITHUB_OUTPUT
-            echo "Changes detected in ngx-separador-miles"
+            echo "Changes detected in ngx-rut-v2"
           else
             echo "changes=false" >> $GITHUB_OUTPUT
-            echo "No changes in ngx-separador-miles"
+            echo "No changes in ngx-rut-v2"
           fi
         working-directory: ${{ github.workspace }}
 
@@ -46,7 +46,7 @@ jobs:
 
       - name: Build library
         if: steps.check_changes.outputs.changes == 'true'
-        run: npx ng build ngx-separador-miles
+        run: npx ng build ngx-rut-v2
         working-directory: ${{ github.workspace }}
 
       - name: Check if version is already published
@@ -66,7 +66,7 @@ jobs:
 
       - name: Publish to npm
         if: steps.check_changes.outputs.changes == 'true' && steps.check_version.outputs.publish == 'true'
-        working-directory: ${{ github.workspace }}/dist/ngx-separador-miles
+        working-directory: ${{ github.workspace }}/dist/ngx-rut-v2
         run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

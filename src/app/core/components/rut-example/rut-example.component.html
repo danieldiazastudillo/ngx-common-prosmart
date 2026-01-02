@@ -1,0 +1,44 @@
+<div class="row justify-content-center bg-dark-subtle border border-2 shadow my-3 p-4 rounded-2">
+  <div class="col">
+    <h2>ngx-rut-v2</h2>
+    <p>Valida y formatea RUT (Rol Único Tributario) chileno. Incluye validación para formularios reactivos y formateo automático en inputs.</p>
+
+    <pre class="shadow-lg my-3 rounded-3">
+      <code [highlight]="bash" language="bash"></code>
+    </pre>
+  </div>
+  <div class="col">
+    <form [formGroup]="form">
+      <label for="rut" class="form-label">RUT (Rol Único Tributario):</label>
+      <input class="form-control form-control-lg" formControlName="rut" id="rut" formatRut />
+      @if (form.get('rut')?.hasError('required') && form.get('rut')?.touched) {
+        <div class="text-danger mt-2">El RUT es requerido</div>
+      }
+      @if (form.get('rut')?.hasError('invalidRut') && form.get('rut')?.touched) {
+        <div class="text-danger mt-2">El RUT ingresado es <strong>inválido</strong></div>
+      }
+    </form>
+
+    <div class="mt-3">
+      <p><strong>Valor del formulario:</strong></p>
+      <pre class="shadow-lg my-3 rounded-3">
+        <code [highlight]="form.value | json" language="json" lineNumbers></code>
+      </pre>
+      <p><strong>RUT Formateado (con pipe):</strong> {{ (form.get('rut')?.value || '') | rut }}</p>
+    </div>
+  </div>
+</div>
+
+<div class="row justify-content-center my-3">
+  <div class="col">
+    <h4>Implementación:</h4>
+    <p><small>La directiva de formateo es <strong>formatRut</strong> y la validación se hace con <strong>rutValidator</strong></small></p>
+    <pre class="shadow-lg my-3 rounded-3">
+      <code [highlight]="textoImplementacion" language="ts" lineNumbers></code>
+    </pre>
+
+    <pre class="shadow-lg my-3 rounded-3">
+      <code [highlight]="textoTemplate" language="html" lineNumbers></code>
+    </pre>
+  </div>
+</div>

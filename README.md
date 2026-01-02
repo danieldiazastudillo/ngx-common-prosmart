@@ -50,6 +50,56 @@ import { SeparadorMilesAccessor } from 'ngx-separador-miles';
 
 📚 [View full documentation](./projects/ngx-separador-miles/README.md)
 
+---
+
+### 📦 ngx-rut-v2
+
+An Angular library for validating and formatting Chilean RUT (Rol Único Tributario) with standalone components support.
+
+**Features:**
+- RUT validation for reactive and template-driven forms
+- Automatic RUT formatting (X.XXX.XXX-X)
+- Standalone components, directives, and pipes
+- ControlValueAccessor for seamless form integration
+- Zero external dependencies (except Angular)
+- Fully typed TypeScript implementation
+
+**Compatibility:**
+
+| ngx-rut-v2 | Angular | Status |
+|------------|---------|--------|
+| 1.5.x      | 18.x    | ✅ Supported |
+| 1.6.x      | 19.x    | ✅ Supported |
+| 1.7.x      | 19.x    | ✅ Supported |
+| 1.8.x      | 20.x    | ✅ Supported |
+| 1.9.x      | 21.x    | ✅ Current |
+
+**Installation:**
+```bash
+npm install ngx-rut-v2 --save
+```
+
+**Quick Example:**
+```typescript
+import { rutValidator, RutValueAccessor, RutPipe } from 'ngx-rut-v2';
+
+@Component({
+  standalone: true,
+  imports: [ReactiveFormsModule, RutValueAccessor, RutPipe],
+  template: `
+    <input formControlName="rut" formatRut />
+    <p>Formatted: {{ userRut | rut }}</p>
+  `
+})
+export class MyComponent {
+  form = this.fb.group({
+    rut: ['', [Validators.required, rutValidator]]
+  });
+}
+```
+
+📚 [View full documentation](./projects/ngx-rut-v2/README.md)
+
 ## Development
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.15.
@@ -140,12 +190,14 @@ Angular CLI does not come with an end-to-end testing framework by default. You c
 ```
 ngx-common-prosmart/
 ├── projects/
-│   └── ngx-separador-miles/     # Thousands separator directive library
+│   ├── ngx-separador-miles/     # Thousands separator directive library
+│   └── ngx-rut-v2/              # Chilean RUT validation & formatting library
 ├── src/                         # Demo application
 │   └── app/
 │       └── core/
 │           └── components/
-│               └── separador-example/  # Example implementation
+│               ├── separador-example/  # Separador-miles examples
+│               └── rut-example/        # RUT validation examples
 ├── dist/                        # Build output (generated)
 └── README.md                    # This file
 ```

@@ -15,8 +15,7 @@ export const rutValidator: ValidatorFn = (control: AbstractControl): ValidationE
   selector: '[validateRut][ngModel],[validateRut][formControl]',
   providers: [
     { provide: NG_VALIDATORS, useExisting: forwardRef(() => RutValidator), multi: true },
-  ],
-  standalone: true
+  ]
 })
 export class RutValidator implements Validator {
   validate(control: AbstractControl): ValidationErrors | null {

@@ -2,8 +2,7 @@ import { Directive, HostListener } from '@angular/core';
 import { rutClean, rutFormat } from '../helpers/rut-helpers';
 
 @Directive({
-  selector: '[formatRut]',
-  standalone: true
+  selector: '[formatRut]'
 })
 export class RutDirective {
   @HostListener('focus', ['$event'])

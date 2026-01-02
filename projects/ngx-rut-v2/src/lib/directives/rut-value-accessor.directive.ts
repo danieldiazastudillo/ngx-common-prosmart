@@ -11,7 +11,6 @@ const RUT_VALUE_ACCESSOR: any = {
 
 @Directive({
   selector: 'input[formatRut]',
-  standalone: true,
   providers: [RUT_VALUE_ACCESSOR],
 })
 export class RutValueAccessor implements ControlValueAccessor {

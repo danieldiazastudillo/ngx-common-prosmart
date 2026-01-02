@@ -155,6 +155,89 @@ ng build
    npm publish
    ```
 
+## 🚀 CI/CD & Publication Workflows
+
+This project uses GitHub Actions for automated continuous integration, deployment, and publication. There are three main workflows:
+
+### 📦 Library Publication to npm
+
+Two automated workflows handle publishing libraries to npm when changes are pushed to the `main` branch:
+
+#### **ngx-separador-miles** (`.github/workflows/publish-ngx-separador-miles.yml`)
+- **Triggers:** Changes to `projects/ngx-separador-miles/**` or the workflow file itself
+- **Process:**
+  1. Detects changes in the library directory
+  2. Installs dependencies and builds the library
+  3. Checks if the version in `package.json` is already published on npm
+  4. Publishes to npm with `--access public` if version is new
+- **Requirements:** `NPM_TOKEN` secret configured in GitHub repository settings
+
+#### **ngx-rut-v2** (`.github/workflows/publish-ngx-rut-v2.yml`)
+- **Triggers:** Changes to `projects/ngx-rut-v2/**` or the workflow file itself
+- **Process:** Same as ngx-separador-miles
+- **Requirements:** `NPM_TOKEN` secret configured in GitHub repository settings
+
+**Important Notes:**
+- 📌 Version must be updated in the library's `package.json` before pushing
+- 🔐 Requires npm authentication token stored as GitHub secret
+- ✅ Automatically skips publication if version already exists on npm
+- 🔄 Runs on every push to `main` branch (only when library files change)
+
+### 🌐 GitHub Pages Deployment
+
+#### **Deploy Angular App** (`.github/workflows/deploy.yml`)
+- **Triggers:** Push or pull request to `main` branch
+- **Process:**
+  1. Builds both libraries in parallel (`ngx-separador-miles` & `ngx-rut-v2`)
+  2. Builds the demo Angular application
+  3. Deploys to GitHub Pages at `https://danieldiazastudillo.github.io/ngx-common-prosmart/`
+- **Output:** Live interactive examples and documentation site
+
+**What gets deployed:**
+- 📱 Interactive component demos
+- 📖 Implementation examples
+- 🎯 Real-world usage scenarios
+- 💡 Configuration guides
+
+### 🔄 Workflow Best Practices
+
+**Before Publishing a New Version:**
+
+1. **Update version number** in library's `package.json`:
+   ```json
+   {
+     "name": "ngx-rut-v2",
+     "version": "1.10.0",  // Increment this
+     ...
+   }
+   ```
+
+2. **Update CHANGELOG.md** with new features/fixes
+
+3. **Update README.md** compatibility table if needed
+
+4. **Commit and push** to `main` branch:
+   ```bash
+   git add .
+   git commit -m "chore: release ngx-rut-v2 v1.10.0"
+   git push origin main
+   ```
+
+5. **Workflow automatically:**
+   - ✅ Detects changes
+   - ✅ Builds library
+   - ✅ Checks version
+   - ✅ Publishes to npm
+   - ✅ Deploys demo to GitHub Pages
+
+### 📋 Workflow Status
+
+Check the **Actions** tab in GitHub to monitor:
+- Build status
+- Publication results
+- Deployment logs
+- Error messages (if any)
+
 ## Code Scaffolding
 
 Angular CLI includes powerful code scaffolding tools. To generate a new component, run:

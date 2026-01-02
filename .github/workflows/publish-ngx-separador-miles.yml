@@ -6,7 +6,7 @@ on:
       - main
     paths:
       - 'projects/ngx-separador-miles/**'
-      - '.github/workflows/publish-library.yml'
+      - '.github/workflows/publish-ngx-separador-miles.yml'
 
 jobs:
   publish:

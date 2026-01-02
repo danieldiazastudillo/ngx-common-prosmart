@@ -1,13 +1,14 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Component, DebugElement } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 import { SeparadorMilesAccessor } from './separador-miles.directive';
+import { vi } from 'vitest';
 
 @Component({
     template: `
-    <input 
-      [formControl]="control" 
+    <input
+      [formControl]="control"
       [libSeparadorMiles.config]="config"
       type="text">
   `,

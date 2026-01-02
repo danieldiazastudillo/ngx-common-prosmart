@@ -21,7 +21,15 @@ A lightweight Angular directive for formatting numbers with thousands separators
 - Configurable decimal and thousands separators
 - Works with Angular Reactive Forms
 - Signal-based configuration
-- Supports Angular 19 and onwards (including Angular 20+)
+- Tested and recommended for Angular 21.x projects
+
+**Compatibility:**
+
+| ngx-separador-miles | Angular | Status |
+|---------------------|---------|--------|
+| 0.0.x | 21.x | ✅ Current |
+| 0.1.x | 22.x | 📅 Planned |
+| 1.0.x | 23.x | 📅 Planned |
 
 **Installation:**
 ```bash

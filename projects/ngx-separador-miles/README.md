@@ -1,6 +1,6 @@
 # NgxSeparadorMiles
 
-A lightweight Angular directive for formatting numbers with thousands separators in input fields. Compatible with Angular 19 and onwards (including Angular 20+).
+A lightweight Angular directive for formatting numbers with thousands separators in input fields. Tested and recommended for Angular 21.x projects (with backward compatibility to Angular 19.2.0+).
 
 ## 🌐 Live Demo
 
@@ -17,6 +17,16 @@ Check out the **[live examples and implementation guide](https://danieldiazastud
 - ✅ Handles copy/paste operations gracefully
 - ✅ Type-safe implementation
 - ✅ Zero dependencies (except Angular peer dependencies)
+
+## Compatibility
+
+| ngx-separador-miles Version | Angular Version | Status |
+|----------------------------|-----------------|--------|
+| 0.0.x | 21.x | ✅ Current (Recommended) |
+| 0.1.x | 22.x | 📅 Planned |
+| 1.0.x | 23.x | 📅 Planned |
+
+> **Note:** Version 0.0.x maintains backward compatibility with Angular 19.2.0+ but is tested and optimized for Angular 21.x projects.
 
 ## Installation
 

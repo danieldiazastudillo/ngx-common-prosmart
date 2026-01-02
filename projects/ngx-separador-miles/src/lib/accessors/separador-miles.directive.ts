@@ -69,15 +69,16 @@ export class SeparadorMilesAccessor implements ControlValueAccessor {
     this.disabled = isDisabled;
     this.el.nativeElement.disabled = isDisabled;
   }
-  @HostListener('input', ['$event.target.value'])
-  onInput(value: string) {
+  @HostListener('input', ['$event'])
+  onInput(event: Event) {
+    const value = (event.target as HTMLInputElement).value;
     const input = this.el.nativeElement;
     const decSep = this.decimalSeparator;
     // Sanitize: allow only digits and a single decimal separator
-    let sanitized = value.replace(new RegExp(`[^0-9${decSep}]`, 'g'), '');
+    let sanitized = value.replaceAll(new RegExp(`[^0-9${decSep}]`, 'g'), '');
     const firstSep = sanitized.indexOf(decSep);
     if (firstSep !== -1) {
-      sanitized = sanitized.substring(0, firstSep + 1) + sanitized.substring(firstSep + 1).replace(new RegExp(`[${decSep}]`, 'g'), '');
+      sanitized = sanitized.substring(0, firstSep + 1) + sanitized.substring(firstSep + 1).replaceAll(new RegExp(`[${decSep}]`, 'g'), '');
     }
     // Parse and always format for display, even for partial decimals
     const raw = this.parseValue(sanitized);
@@ -86,8 +87,8 @@ export class SeparadorMilesAccessor implements ControlValueAccessor {
     if (sanitized !== '') {
       // Format even for partial decimals (e.g., '123,')
       const [intPart, decPart] = sanitized.split(decSep);
-      let intFormatted = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, this.thousandSeparator);
-      formatted = decPart !== undefined ? intFormatted + decSep + decPart : intFormatted;
+      let intFormatted = intPart.replaceAll(/\B(?=(\d{3})+(?!\d))/g, this.thousandSeparator);
+      formatted = decPart === undefined ? intFormatted : intFormatted + decSep + decPart;
     }
     if (input.value !== formatted) {
       const prevPos = input.selectionStart ?? formatted.length;
@@ -107,28 +108,27 @@ export class SeparadorMilesAccessor implements ControlValueAccessor {
   onBlur() {
     // On blur, always format whatever is in the input
     const input = this.el.nativeElement;
-    const raw = this.parseValue(input.value);
-    if (input.value !== '') {
+    if (input.value === '') {
+      this.onChange(null);
+    } else {
       // Always format for display, even for partial decimals
       const decSep = this.decimalSeparator;
       const [intPart, decPart] = input.value.split(decSep);
-      let intFormatted = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, this.thousandSeparator);
-      input.value = decPart !== undefined ? intFormatted + decSep + decPart : intFormatted;
-    } else {
-      this.onChange(null);
+      let intFormatted = intPart.replaceAll(/\B(?=(\d{3})+(?!\d))/g, this.thousandSeparator);
+      input.value = decPart === undefined ? intFormatted : intFormatted + decSep + decPart;
     }
     this.onTouched();
   }
 
   private formatValue(value: any): string {
     if (value === null || value === undefined || value === '') return '';
-    let [integer, decimal] = String(value).replace(/[^\d.,-]/g, '').split(/[.,]/);
+    let [integer, decimal] = String(value).replaceAll(/[^\d.,-]/g, '').split(/[.,]/);
     let sign = '';
     if (integer.startsWith('-')) {
       sign = '-';
       integer = integer.slice(1);
     }
-    integer = integer.replace(/\B(?=(\d{3})+(?!\d))/g, this.thousandSeparator);
+    integer = integer.replaceAll(/\B(?=(\d{3})+(?!\d))/g, this.thousandSeparator);
     if (this.allowDecimals && decimal !== undefined) {
       return sign + integer + this.decimalSeparator + decimal;
     }
@@ -137,9 +137,9 @@ export class SeparadorMilesAccessor implements ControlValueAccessor {
   private parseValue(value: string): number | null {
     if (!value) return null;
     // Remove all non-numeric except decimal
-    let val = value.replace(new RegExp(`[^0-9${this.decimalSeparator}]`, 'g'), '');
-    val = val.replace(this.decimalSeparator, '.');
-    const num = parseFloat(val);
-    return isNaN(num) ? null : num;
+    let val = value.replaceAll(new RegExp(`[^0-9${this.decimalSeparator}]`, 'g'), '');
+    val = val.replaceAll(this.decimalSeparator, '.');
+    const num = Number.parseFloat(val);
+    return Number.isNaN(num) ? null : num;
   }
 }

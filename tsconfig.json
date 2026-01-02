@@ -10,6 +10,9 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "paths": {
+      "ngx-rut-v2": [
+        "./dist/ngx-rut-v2"
+      ],
       "ngx-separador-miles": [
         "./dist/ngx-separador-miles"
       ]
@@ -28,5 +31,13 @@
     "strictInjectionParameters": true,
     "strictInputAccessModifiers": true,
     "strictTemplates": true
-  }
+  },
+  "references": [
+    {
+      "path": "./projects/ngx-rut-v2/tsconfig.lib.json"
+    },
+    {
+      "path": "./projects/ngx-rut-v2/tsconfig.spec.json"
+    }
+  ]
 }

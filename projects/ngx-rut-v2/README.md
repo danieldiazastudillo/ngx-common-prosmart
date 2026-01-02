@@ -4,15 +4,18 @@ Basado en [ngx-rut](https://github.com/danieldiazastudillo/ngx-rut) pero usando 
 
 Valida y formatea [RUT Chilenos](https://en.wikipedia.org/wiki/National_identification_number#Chile)
 
-## Compatibilidad
+## Compatibilidad Angular
 
-| Versión ngx-rut-v2 | Versión Angular |
-|--------------------|-----------------|
-| 1.5.0              | 18              |
-| 1.6.0              | 19              |
-| 1.7.0              | 19              |
-| 1.8.0              | 20              |
-| 1.9.0              | 21              |
+| Versión ngx-rut-v2 | Versión Angular | Estado |
+|--------------------|-----------------|--------|
+| 1.5.0              | 18              | ✅ Soportado |
+| 1.6.0              | 19              | ✅ Soportado |
+| 1.7.0              | 19              | ✅ Soportado |
+| 1.8.0              | 20              | ✅ Soportado |
+| 1.9.0              | 21              | ✅ Soportado |
+| 1.10.0             | 21              | ✅ Actual (Recomendado) |
+
+> **Nota:** Las versiones soportan Angular desde 20.0.0 hasta 21.x. Para versiones anteriores de Angular, consulte versiones anteriores de la librería.
 
 ## Installation
 
@@ -80,16 +83,72 @@ export class DemoAppComponent {
 <!-- 3.097.219-8 -->
 ```
 
-##### formatRut (Directiva para inputs con ControlValueAccessor)
+##### RutValueAccessor (Directiva con Formateo en Tiempo Real)
+
+> **NUEVO en v1.10.0:** Formateo automático mientras el usuario escribe, con restricción de caracteres y conversión automática a mayúsculas.
+
+**Características:**
+- ✅ Formateo en tiempo real mientras escribe (no espera blur)
+- ✅ Restricción de entrada: solo números y letra 'K'
+- ✅ Conversión automática de 'k' a 'K' (mayúscula)
+- ✅ Preservación de la posición del cursor durante el formateo
+- ✅ Validación en tiempo real con `rutValidator`
+- ✅ El input muestra el valor formateado (ej: "12.345.678-K")
+- ✅ El formulario recibe el valor limpio (ej: "12345678K")
+
 ```html
 <input formControlName="rut" formatRut />
 <!--
-(on blur)
-3.097.219-8
-
-(on focus/input)
-30972198
+Mientras escribe: 12345678k
+Se muestra:       12.345.678-K (automáticamente formateado y en mayúscula)
+Valor del form:   12345678K (sin formato, listo para validación)
 -->
+```
+
+**Ejemplo Completo con Validación:**
+```typescript
+import { Component, inject } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { rutValidator, RutValueAccessor, RutPipe } from 'ngx-rut-v2';
+
+@Component({
+  selector: 'app-rut-example',
+  standalone: true,
+  imports: [ReactiveFormsModule, RutValueAccessor, RutPipe],
+  template: `
+    <form [formGroup]="form">
+      <label for="rut">RUT (Rol Único Tributario):</label>
+      <input 
+        id="rut" 
+        formControlName="rut" 
+        formatRut 
+        class="form-control" 
+      />
+      
+      @if (form.get('rut')?.hasError('invalidRut')) {
+        <div class="text-danger">
+          El RUT ingresado es inválido
+        </div>
+      }
+      
+      @if (form.get('rut')?.valid && form.get('rut')?.value) {
+        <div class="text-success">
+          ✓ El RUT es válido
+        </div>
+      }
+      
+      <p>Valor del formulario: {{ form.value | json }}</p>
+      <p>RUT Formateado: {{ form.get('rut')?.value | rut }}</p>
+    </form>
+  `
+})
+export class RutExampleComponent {
+  private fb = inject(FormBuilder);
+
+  form = this.fb.group({
+    rut: ['', [Validators.required, rutValidator]]
+  });
+}
 ```
 ##### Error Form
 

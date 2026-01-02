@@ -18,15 +18,21 @@ Check out the **[live examples and implementation guide](https://danieldiazastud
 - ✅ Type-safe implementation
 - ✅ Zero dependencies (except Angular peer dependencies)
 
-## Compatibility
+## Compatibilidad Angular
 
-| ngx-separador-miles Version | Angular Version | Status |
+| Versión ngx-separador-miles | Versión Angular | Estado |
 |----------------------------|-----------------|--------|
-| 0.0.x | 21.x | ✅ Current (Recommended) |
-| 0.1.x | 22.x | 📅 Planned |
-| 1.0.x | 23.x | 📅 Planned |
+| 0.0.1 - 0.0.2 | 19.2.0+ | ✅ Soportado |
+| 0.0.3 | 19.2.0 - 21.x | ✅ Actual (Recomendado) |
+| 0.1.x | 22.x | 📅 Planeado |
+| 1.0.x | 23.x | 📅 Planeado |
 
-> **Note:** Version 0.0.x maintains backward compatibility with Angular 19.2.0+ but is tested and optimized for Angular 21.x projects.
+> **Nota:** La versión 0.0.3 mantiene compatibilidad retroactiva con Angular 19.2.0+ pero está probada y optimizada para proyectos Angular 21.x.
+>
+> **Requisitos mínimos:**
+> - Angular: >=19.2.0
+> - TypeScript: 5.7+
+> - Navegadores modernos (ES2022+)
 
 ## Installation
 
@@ -230,12 +236,6 @@ To test the library locally in your Angular application:
    ```bash
    npm link ../path/to/ngx-common-prosmart/dist/ngx-separador-miles
    ```
-
-## Compatibility
-
-- **Angular**: 19.2.0 and onwards (including Angular 20+)
-- **TypeScript**: 5.7+
-- **Browser Support**: Modern browsers (ES2022+)
 
 ## License
 

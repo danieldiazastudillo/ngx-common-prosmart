@@ -17,19 +17,22 @@ Visit our **[GitHub Pages site](https://danieldiazastudillo.github.io/ngx-common
 A lightweight Angular directive for formatting numbers with thousands separators in input fields.
 
 **Features:**
-- Automatic thousands separator formatting
-- Configurable decimal and thousands separators
-- Works with Angular Reactive Forms
-- Signal-based configuration
-- Tested and recommended for Angular 21.x projects
+- ✅ Automatic thousands separator formatting as you type
+- ✅ Configurable decimal and thousands separators
+- ✅ Optional decimal support
+- ✅ Works seamlessly with Angular Reactive Forms
+- ✅ Signal-based configuration
+- ✅ Maintains cursor position during formatting
+- ✅ Tested and recommended for Angular 21.x projects
 
-**Compatibility:**
+**Compatibilidad Angular:**
 
-| ngx-separador-miles | Angular | Status |
+| ngx-separador-miles | Angular | Estado |
 |---------------------|---------|--------|
-| 0.0.x | 21.x | ✅ Current |
-| 0.1.x | 22.x | 📅 Planned |
-| 1.0.x | 23.x | 📅 Planned |
+| 0.0.1 - 0.0.2 | 19.2.0+ | ✅ Soportado |
+| 0.0.3 | 19.2.0 - 21.x | ✅ Actual (Recomendado) |
+| 0.1.x | 22.x | 📅 Planeado |
+| 1.0.x | 23.x | 📅 Planeado |
 
 **Installation:**
 ```bash
@@ -57,22 +60,26 @@ import { SeparadorMilesAccessor } from 'ngx-separador-miles';
 An Angular library for validating and formatting Chilean RUT (Rol Único Tributario) with standalone components support.
 
 **Features:**
-- RUT validation for reactive and template-driven forms
-- Automatic RUT formatting (X.XXX.XXX-X)
-- Standalone components, directives, and pipes
-- ControlValueAccessor for seamless form integration
-- Zero external dependencies (except Angular)
-- Fully typed TypeScript implementation
+- ✅ Real-time RUT formatting as user types (NEW in v1.10.0)
+- ✅ Input restriction: only numbers and letter 'K'
+- ✅ Automatic uppercase conversion for 'K'
+- ✅ RUT validation for reactive and template-driven forms
+- ✅ Automatic RUT formatting (12.345.678-K)
+- ✅ Standalone components, directives, and pipes
+- ✅ ControlValueAccessor for seamless form integration
+- ✅ Zero external dependencies (except Angular)
+- ✅ Fully typed TypeScript implementation
 
-**Compatibility:**
+**Compatibilidad Angular:**
 
-| ngx-rut-v2 | Angular | Status |
+| ngx-rut-v2 | Angular | Estado |
 |------------|---------|--------|
-| 1.5.x      | 18.x    | ✅ Supported |
-| 1.6.x      | 19.x    | ✅ Supported |
-| 1.7.x      | 19.x    | ✅ Supported |
-| 1.8.x      | 20.x    | ✅ Supported |
-| 1.9.x      | 21.x    | ✅ Current |
+| 1.5.0      | 18      | ✅ Soportado |
+| 1.6.0      | 19      | ✅ Soportado |
+| 1.7.0      | 19      | ✅ Soportado |
+| 1.8.0      | 20      | ✅ Soportado |
+| 1.9.0      | 21      | ✅ Soportado |
+| 1.10.0     | 21      | ✅ Actual (Recomendado) |
 
 **Installation:**
 ```bash
@@ -88,6 +95,7 @@ import { rutValidator, RutValueAccessor, RutPipe } from 'ngx-rut-v2';
   imports: [ReactiveFormsModule, RutValueAccessor, RutPipe],
   template: `
     <input formControlName="rut" formatRut />
+    <!-- Real-time formatting: 12345678k → 12.345.678-K -->
     <p>Formatted: {{ userRut | rut }}</p>
   `
 })

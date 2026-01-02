@@ -17,6 +17,9 @@
       @if (form.get('rut')?.hasError('invalidRut') && form.get('rut')?.touched) {
         <div class="text-danger mt-2">El RUT ingresado es <strong>inválido</strong></div>
       }
+      @if (form.get('rut')?.valid && form.get('rut')?.value && form.get('rut')?.touched) {
+        <div class="text-success mt-2">✓ El RUT es <strong>válido</strong></div>
+      }
     </form>
 
     <div class="mt-3">

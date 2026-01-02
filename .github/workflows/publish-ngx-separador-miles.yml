@@ -11,62 +11,41 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: projects/ngx-separador-miles
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
-
-      - name: Check for changes in ngx-separador-miles
-        id: check_changes
-        run: |
-          if git diff HEAD~1 --name-only | grep -q "^projects/ngx-separador-miles/"; then
-            echo "changes=true" >> $GITHUB_OUTPUT
-            echo "Changes detected in ngx-separador-miles"
-          else
-            echo "changes=false" >> $GITHUB_OUTPUT
-            echo "No changes in ngx-separador-miles"
-          fi
-        working-directory: ${{ github.workspace }}
 
       - name: Use Node.js 20.x
-        if: steps.check_changes.outputs.changes == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: '20.x'
           registry-url: 'https://registry.npmjs.org/'
 
-      - name: Install dependencies (root)
-        if: steps.check_changes.outputs.changes == 'true'
+      - name: Install dependencies
         run: npm ci
-        working-directory: ${{ github.workspace }}
 
       - name: Build library
-        if: steps.check_changes.outputs.changes == 'true'
         run: npx ng build ngx-separador-miles
-        working-directory: ${{ github.workspace }}
 
       - name: Check if version is already published
-        if: steps.check_changes.outputs.changes == 'true'
         id: check_version
+        working-directory: projects/ngx-separador-miles
         run: |
           PKG_NAME=$(node -p "require('./package.json').name")
           PKG_VERSION=$(node -p "require('./package.json').version")
-          NPM_VIEW=$(npm view $PKG_NAME@$PKG_VERSION version || true)
-          echo "Published version: $NPM_VIEW"
-          if [ "$NPM_VIEW" = "$PKG_VERSION" ]; then
-            echo "Version already published. Skipping publish."
+          echo "Package: $PKG_NAME@$PKG_VERSION"
+          NPM_VIEW=$(npm view $PKG_NAME@$PKG_VERSION version 2>/dev/null || echo "")
+          if [ -n "$NPM_VIEW" ] && [ "$NPM_VIEW" = "$PKG_VERSION" ]; then
+            echo "Version $PKG_VERSION already published on npm. Skipping publish."
             echo "publish=false" >> $GITHUB_OUTPUT
           else
+            echo "Version $PKG_VERSION not found on npm. Will publish."
             echo "publish=true" >> $GITHUB_OUTPUT
           fi
 
       - name: Publish to npm
-        if: steps.check_changes.outputs.changes == 'true' && steps.check_version.outputs.publish == 'true'
-        working-directory: ${{ github.workspace }}/dist/ngx-separador-miles
+        if: steps.check_version.outputs.publish == 'true'
+        working-directory: dist/ngx-separador-miles
         run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

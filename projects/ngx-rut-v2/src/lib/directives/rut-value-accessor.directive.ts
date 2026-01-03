@@ -1,26 +1,25 @@
 
-import { Directive, forwardRef, ElementRef, Renderer2, HostListener } from '@angular/core';
+import { Directive, ElementRef, Renderer2, HostListener, inject } from '@angular/core';
 import { rutFormat, rutClean } from '../helpers/rut-helpers';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
-const RUT_VALUE_ACCESSOR: any = {
-  provide: NG_VALUE_ACCESSOR,
-  useExisting: forwardRef(() => RutValueAccessor),
-  multi: true,
-};
-
 @Directive({
   selector: 'input[formatRut]',
-  providers: [RUT_VALUE_ACCESSOR],
+  standalone: true,
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: RutValueAccessor,
+      multi: true,
+    },
+  ],
 })
 export class RutValueAccessor implements ControlValueAccessor {
+  private readonly renderer = inject(Renderer2);
+  private readonly elementRef = inject(ElementRef);
+
   private onChange: (value: any) => void = () => {};
   private onTouched: () => void = () => {};
-
-  constructor(
-    private readonly renderer: Renderer2,
-    private readonly elementRef: ElementRef,
-  ) {}
 
   @HostListener('input', ['$event'])
   onInput(event: Event) {
@@ -77,8 +76,28 @@ export class RutValueAccessor implements ControlValueAccessor {
   }
 
   writeValue(value: any): void {
+    const input = this.elementRef.nativeElement;
     const formatted = rutFormat(value) || '';
-    this.renderer.setProperty(this.elementRef.nativeElement, 'value', formatted);
+
+    // Only update if value actually changed to prevent unnecessary DOM updates
+    if (input.value !== formatted) {
+      const prevPos = input.selectionStart ?? 0;
+      const prevLength = input.value.length;
+
+      this.renderer.setProperty(input, 'value', formatted);
+
+      // Only manage cursor if user is actively focused (reactive approach)
+      if (document.activeElement === input) {
+        const nextLength = formatted.length;
+        const diff = nextLength - prevLength;
+        const newPos = Math.max(0, Math.min(prevPos + diff, formatted.length));
+
+        // setTimeout needed because Renderer2 queues DOM updates
+        setTimeout(() => {
+          input.setSelectionRange(newPos, newPos);
+        }, 0);
+      }
+    }
   }
 
   registerOnChange(fn: (_: any) => void): void {

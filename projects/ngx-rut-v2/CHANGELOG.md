@@ -5,6 +5,51 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - 2026-01-02
+
+### Added
+- Focus-aware `writeValue()` implementation in `RutValueAccessor` to handle programmatic form updates
+- Cursor position preservation during programmatic updates when input is focused
+- Reactive pattern for cursor management - only manages cursor when `document.activeElement === input`
+- Prevention of unnecessary DOM updates by checking if value actually changed before updating
+
+### Changed
+- Migrated `RutValueAccessor` to standalone directive (no longer requires NgModule)
+- Replaced constructor-based dependency injection with `inject()` pattern (Angular 14+ best practice)
+- Enhanced `writeValue()` to maintain formatting even during `setValue()` or `patchValue()` operations
+- Improved cursor position calculation with boundary checks to prevent out-of-range errors
+
+### Deprecated
+- **`RutDirective` (selector: `[formatRut]`) has been renamed to `[formatRutLegacy]` and is deprecated**
+- The legacy focus/blur formatting directive will be removed in v3.0.0
+- Console warnings now appear when using `[formatRutLegacy]` to guide migration
+- **Migration Guide:**
+  ```html
+  <!-- ❌ Old (deprecated): -->
+  <input formControlName="rut" formatRutLegacy />
+  
+  <!-- ✅ New (recommended): -->
+  <input formControlName="rut" formatRut />
+  ```
+- Users should migrate to `RutValueAccessor` (selector: `input[formatRut]`) which provides better functionality:
+  - Real-time formatting during typing
+  - Cursor position management
+  - Support for programmatic form updates
+  - Keyboard input restrictions
+
+### Fixed
+- **[CRITICAL]** RUT formatting no longer lost when form values are updated programmatically (e.g., via search/fetch operations)
+- Eliminated selector collision between `RutDirective` and `RutValueAccessor` (both previously used `[formatRut]`)
+- Cursor position now correctly preserved during programmatic updates when input is focused
+- Prevented jarring UI updates by conditionally managing cursor only when user is actively focused on input
+
+### Technical Details
+- Uses `document.activeElement` check to determine if cursor management is needed (reactive approach)
+- Eliminates reliance on arbitrary `setTimeout()` delays for DOM updates in most scenarios
+- Uses `Renderer2.setProperty()` for safe DOM manipulation following Angular best practices
+- Cursor position calculation: `Math.max(0, Math.min(prevPos + diff, formatted.length))`
+- Only updates DOM when `input.value !== formatted` to prevent unnecessary re-renders
+
 ## [1.10.0] - 2026-01-02
 
 ### Added

@@ -8,6 +8,7 @@
     </pre>
   </div>
   <div class="col">
+    <h4>✅ Implementación Recomendada (RutValueAccessor)</h4>
     <form [formGroup]="form">
       <label for="rut" class="form-label">RUT (Rol Único Tributario):</label>
       <input class="form-control form-control-lg" formControlName="rut" id="rut" formatRut />
@@ -23,12 +24,49 @@
     </form>
 
     <div class="mt-3">
+      <button class="btn btn-primary btn-sm" type="button" (click)="onSimulateProgrammaticUpdate()">
+        🧪 Test Programmatic Update
+      </button>
+      <p class="text-muted small mt-2">Click to test setValue() while input is focused</p>
+    </div>
+
+    <div class="mt-3">
       <p><strong>Valor del formulario:</strong></p>
       <pre class="shadow-lg my-3 rounded-3">
         <code [highlight]="form.value | json" language="json" lineNumbers></code>
       </pre>
       <p><strong>RUT Formateado (con pipe):</strong> {{ (form.get('rut')?.value || '') | rut }}</p>
     </div>
+  </div>
+</div>
+
+<div class="row justify-content-center bg-warning-subtle border border-warning border-2 shadow my-3 p-4 rounded-2">
+  <div class="col">
+    <h4>⚠️ Implementación Deprecada (formatRutLegacy)</h4>
+    <div class="alert alert-warning" role="alert">
+      <strong>DEPRECATION WARNING:</strong> The <code>[formatRutLegacy]</code> directive is deprecated and will be removed in v3.0.0.
+      Please migrate to <code>[formatRut]</code> with form controls (see recommended implementation above).
+      Check browser console for deprecation warnings.
+    </div>
+
+    <form [formGroup]="deprecatedForm">
+      <label for="rut-deprecated" class="form-label">RUT (usando formatRutLegacy - Deprecated):</label>
+      <input class="form-control form-control-lg" formControlName="rut" id="rut-deprecated" formatRutLegacy />
+      @if (deprecatedForm.get('rut')?.hasError('invalidRut') && deprecatedForm.get('rut')?.touched) {
+        <div class="text-danger mt-2">El RUT ingresado es <strong>inválido</strong></div>
+      }
+    </form>
+
+    <div class="mt-3">
+      <button class="btn btn-warning btn-sm" type="button" (click)="onSimulateDeprecatedUpdate()">
+        ⚠️ Test Deprecated Directive
+      </button>
+      <p class="text-muted small mt-2">This will trigger console warning</p>
+    </div>
+
+    <pre class="shadow-lg my-3 rounded-3">
+      <code [highlight]="deprecatedExample" language="html" lineNumbers></code>
+    </pre>
   </div>
 </div>
 

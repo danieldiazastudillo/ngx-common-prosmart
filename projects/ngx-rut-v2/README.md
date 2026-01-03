@@ -13,7 +13,8 @@ Valida y formatea [RUT Chilenos](https://en.wikipedia.org/wiki/National_identifi
 | 1.7.0              | 19              | ✅ Soportado |
 | 1.8.0              | 20              | ✅ Soportado |
 | 1.9.0              | 21              | ✅ Soportado |
-| 1.10.0             | 21              | ✅ Actual (Recomendado) |
+| 1.10.0             | 21              | ✅ Soportado |
+| **2.1.0**          | **21**          | **✅ Actual (Recomendado)** |
 
 > **Nota:** Las versiones soportan Angular desde 20.0.0 hasta 21.x. Para versiones anteriores de Angular, consulte versiones anteriores de la librería.
 
@@ -22,6 +23,38 @@ Valida y formatea [RUT Chilenos](https://en.wikipedia.org/wiki/National_identifi
 ```bash
 npm install --save ngx-rut-v2
 ```
+
+## ⚠️ DEPRECATION NOTICE (v2.1.0)
+
+**The `RutDirective` (selector: `[formatRut]`) has been renamed to `[formatRutLegacy]` and is deprecated.**
+
+This legacy directive will be **removed in v3.0.0**. Please migrate to `RutValueAccessor` which provides superior functionality:
+
+### Migration Guide
+
+```html
+<!-- ❌ Old (deprecated - will show console warning): -->
+<input formControlName="rut" formatRutLegacy />
+
+<!-- ✅ New (recommended): -->
+<input formControlName="rut" formatRut />
+```
+
+### Why Migrate?
+
+| Feature | `formatRutLegacy` (Deprecated) | `RutValueAccessor` (Recommended) |
+|---------|-------------------------------|----------------------------------|
+| Real-time formatting | ❌ Only on focus/blur | ✅ While typing |
+| Programmatic updates | ❌ Loses formatting | ✅ Maintains formatting |
+| Cursor management | ❌ No | ✅ Yes |
+| Input restrictions | ❌ No | ✅ Only numbers & K |
+| Standalone | ❌ No | ✅ Yes |
+
+**What changed in v2.1.0:**
+- ✅ **Fixed:** Formatting now persists during programmatic form updates (`setValue()`, `patchValue()`)
+- ✅ **Added:** Focus-aware cursor management for seamless user experience
+- ✅ **Improved:** Standalone directive using modern Angular patterns (`inject()`)
+- ⚠️ **Deprecated:** `[formatRutLegacy]` - migrate to `[formatRut]` on form controls
 
 
 ## Set-up:
@@ -85,10 +118,15 @@ export class DemoAppComponent {
 
 ##### RutValueAccessor (Directiva con Formateo en Tiempo Real)
 
+> **MEJORADO en v2.1.0:** Ahora mantiene el formateo durante actualizaciones programáticas del formulario (ej: después de búsquedas o fetch de datos).
+
 > **NUEVO en v1.10.0:** Formateo automático mientras el usuario escribe, con restricción de caracteres y conversión automática a mayúsculas.
 
 **Características:**
 - ✅ Formateo en tiempo real mientras escribe (no espera blur)
+- ✅ **[v2.1.0] Mantiene formateo durante `setValue()` y `patchValue()`**
+- ✅ **[v2.1.0] Gestión inteligente del cursor - solo cuando el input está enfocado**
+- ✅ **[v2.1.0] Directiva standalone con patrón `inject()` moderno**
 - ✅ Restricción de entrada: solo números y letra 'K'
 - ✅ Conversión automática de 'k' a 'K' (mayúscula)
 - ✅ Preservación de la posición del cursor durante el formateo

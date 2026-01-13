@@ -48,3 +48,4 @@ export class AppComponent implements AfterViewInit, OnDestroy {
     return this.activeSection() === sectionId;
   }
 }
+

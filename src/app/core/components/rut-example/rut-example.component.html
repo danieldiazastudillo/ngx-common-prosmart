@@ -70,6 +70,52 @@
   </div>
 </div>
 
+<div class="row justify-content-center bg-info-subtle border border-info border-2 shadow my-3 p-4 rounded-2">
+  <div class="col">
+    <h4>🧪 Signal Forms - Experimental (Angular 21+)</h4>
+    <div class="alert alert-info" role="alert">
+      <strong>⚠️ EXPERIMENTAL:</strong> This uses Angular 21's experimental Signal Forms API (<code>@angular/forms/signals</code>).
+      The API may change until it becomes stable. Requires Angular 21.0.0+.
+    </div>
+
+    <form>
+      <label for="rut-signal" class="form-label">RUT (usando rutSignal - Signal Forms):</label>
+      <input class="form-control form-control-lg" rutSignal [(value)]="signalForm.rut().value" id="rut-signal" />
+
+      @if (signalForm.rut().invalid() && signalForm.rut().touched()) {
+        <div class="mt-2">
+          @for (error of signalForm.rut().errors(); track error.kind) {
+            <div class="text-danger">{{ error.message }}</div>
+          }
+        </div>
+      }
+
+      @if (signalForm.rut().valid() && signalForm.rut().value() && signalForm.rut().touched()) {
+        <div class="text-success mt-2">✓ El RUT es <strong>válido</strong></div>
+      }
+    </form>
+
+    <div class="mt-3">
+      <p><strong>Valor del formulario (Signal):</strong></p>
+      <pre class="shadow-lg my-3 rounded-3">
+        <code [highlight]="signalForm().value() | json" language="json" lineNumbers></code>
+      </pre>
+      <p class="text-muted small">
+        <strong>Note:</strong> Display shows formatted RUT (12.345.678-K), form value contains clean RUT (12345678K)
+      </p>
+    </div>
+
+    <h5 class="mt-4">Implementación Signal Forms:</h5>
+    <pre class="shadow-lg my-3 rounded-3">
+      <code [highlight]="signalFormsImplementation" language="ts" lineNumbers></code>
+    </pre>
+
+    <pre class="shadow-lg my-3 rounded-3">
+      <code [highlight]="signalFormsTemplate" language="html" lineNumbers></code>
+    </pre>
+  </div>
+</div>
+
 <div class="row justify-content-center my-3">
   <div class="col">
     <h4>Implementación:</h4>

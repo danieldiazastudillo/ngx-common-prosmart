@@ -207,6 +207,213 @@ export class RutExampleComponent {
 <input [(ngModel)]="user.rut" name="rut" validateRut formatRut required>
 ```
 
+---
+
+## 🧪 Signal Forms (Experimental - Angular 21+)
+
+> **⚠️ EXPERIMENTAL FEATURE**
+> 
+> This feature uses Angular 21's **experimental Signal Forms API**. The API may change in future Angular versions until it becomes stable. Requires **Angular 21.0.0 or higher**.
+
+### RutSignalDirective
+
+A Signal Forms-compatible directive for RUT formatting and validation using Angular's new signal-based form architecture.
+
+**Features:**
+- ✅ Signal-based reactivity (no callbacks needed)
+- ✅ Real-time formatting as user types
+- ✅ Cursor position preservation
+- ✅ Character restriction (only numbers and 'K')
+- ✅ Automatic uppercase conversion
+- ✅ Clean value in form model, formatted value in display
+- ✅ Automatic form state synchronization
+
+### Installation
+
+Ensure you have Angular 21+ installed:
+
+```bash
+npm install --save ngx-rut-v2
+```
+
+### Setup
+
+```typescript
+import { Component, signal } from '@angular/core';
+import { form, validate, customError, required } from '@angular/forms/signals';
+import { RutSignalDirective, rutValidate } from 'ngx-rut-v2';
+
+@Component({
+  selector: 'app-user-form',
+  standalone: true,
+  imports: [RutSignalDirective],
+  templateUrl: './user-form.component.html'
+})
+export class UserFormComponent {
+  // Create signal-based model
+  userModel = signal({ 
+    rut: '',
+    nombre: ''
+  });
+  
+  // Create form with validations
+  userForm = form(this.userModel, (f) => {
+    // Required validation
+    required(f.rut);
+    
+    // Custom RUT validation
+    validate(f.rut, ({ value }) => {
+      const rutValue = value();
+      if (!rutValue) return undefined;
+      
+      return rutValidate(rutValue) 
+        ? undefined 
+        : customError({ 
+            kind: 'invalidRut', 
+            message: 'El RUT ingresado es inválido' 
+          });
+    });
+  });
+}
+```
+
+### Template Usage
+
+```html
+<form>
+  <label for="rut">RUT (Rol Único Tributario):</label>
+  <input 
+    id="rut" 
+    rutSignal 
+    [field]="userForm.rut" 
+    class="form-control" 
+  />
+  
+  <!-- Display validation errors -->
+  @if (userForm.rut().invalid()) {
+    <div class="text-danger">
+      @for (error of userForm.rut().errors(); track error.kind) {
+        <div>{{ error.message }}</div>
+      }
+    </div>
+  }
+  
+  <!-- Display success state -->
+  @if (userForm.rut().valid() && userForm.rut().value()) {
+    <div class="text-success">
+      ✓ El RUT es válido
+    </div>
+  }
+  
+  <button 
+    type="submit" 
+    [disabled]="userForm().invalid()"
+    (click)="onSubmit()">
+    Enviar
+  </button>
+</form>
+
+<!-- Display form value -->
+<pre>{{ userForm().value() | json }}</pre>
+```
+
+### Form Submission
+
+```typescript
+import { submit } from '@angular/forms/signals';
+
+async onSubmit() {
+  await submit(this.userForm, async (form) => {
+    const data = form().value();
+    console.log('Clean RUT for API:', data.rut); // "12345678K"
+    
+    // Call your API
+    await this.userService.save(data);
+  });
+}
+```
+
+### Dual Value System
+
+**Display Value vs Form Value:**
+
+```html
+<input rutSignal [field]="userForm.rut" />
+```
+
+While user types: `12345678k`
+- **Display** (what user sees): `12.345.678-K` (formatted, uppercase)
+- **Form value** (what form receives): `12345678K` (clean, ready for API/validation)
+
+### Reactive Validation Example
+
+Validation that auto-updates when other fields change:
+
+```typescript
+userForm = form(this.userModel, (f) => {
+  required(f.rut);
+  required(f.confirmRut);
+  
+  // Validate RUT format
+  validate(f.rut, ({ value }) => {
+    const rutValue = value();
+    if (!rutValue) return undefined;
+    return rutValidate(rutValue) 
+      ? undefined 
+      : customError({ kind: 'invalidRut', message: 'RUT inválido' });
+  });
+  
+  // Validate RUT confirmation (automatically re-runs when f.rut changes!)
+  validate(f.confirmRut, ({ value, valueOf }) => {
+    const confirmValue = value();
+    const originalValue = valueOf(f.rut);
+    
+    return confirmValue !== originalValue
+      ? customError({ 
+          kind: 'rutMismatch', 
+          message: 'Los RUTs no coinciden' 
+        })
+      : undefined;
+  });
+});
+```
+
+### Comparison: Signal Forms vs Reactive Forms
+
+| Feature | Reactive Forms (`formatRut`) | Signal Forms (`rutSignal`) |
+|---------|----------------------------|---------------------------|
+| **API Status** | ✅ Stable | ⚠️ Experimental (Angular 21+) |
+| **Import** | `@angular/forms` | `@angular/forms/signals` |
+| **Boilerplate** | More (providers, callbacks) | Less (signals auto-sync) |
+| **Reactivity** | Zone-based | Signal-based |
+| **Formatting** | ✅ Real-time | ✅ Real-time |
+| **Cursor Management** | ✅ Yes | ✅ Yes |
+| **Character Restriction** | ✅ Yes | ✅ Yes |
+| **Validation** | `rutValidator` function | `validate()` + `rutValidate()` |
+| **Use Case** | Production apps (recommended) | Future-ready apps, experimentation |
+
+### Migration Path
+
+Both directives coexist peacefully with different selectors:
+
+```html
+<!-- Reactive Forms (stable) -->
+<input formControlName="rut" formatRut />
+
+<!-- Signal Forms (experimental) -->
+<input rutSignal [field]="userForm.rut" />
+```
+
+You can use both in the same application during gradual migration.
+
+### Notes & Limitations
+
+- **Angular Version**: Requires Angular 21.0.0 or higher
+- **API Stability**: The Signal Forms API is marked as `@experimental` and may change
+- **Browser Support**: Same as Angular (modern browsers)
+- **Performance**: Signal-based reactivity is more efficient than zone-based change detection
+- **Future**: Signal Forms will become the recommended approach once API stabilizes
+
 
 
 

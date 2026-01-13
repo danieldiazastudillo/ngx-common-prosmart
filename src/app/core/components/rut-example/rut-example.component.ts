@@ -1,13 +1,14 @@
 import { JsonPipe } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { form, validate, customError, required } from '@angular/forms/signals';
 import { Highlight } from 'ngx-highlightjs';
 import { HighlightLineNumbers } from 'ngx-highlightjs/line-numbers';
-import { rutValidator, RutValueAccessor, RutPipe, RutDirective } from 'ngx-rut-v2';
+import { rutValidator, RutValueAccessor, RutPipe, RutDirective, RutSignalDirective, rutValidate } from 'ngx-rut-v2';
 
 @Component({
   selector: 'app-rut-example',
-  imports: [ReactiveFormsModule, RutValueAccessor, RutPipe, RutDirective, Highlight, HighlightLineNumbers, JsonPipe],
+  imports: [ReactiveFormsModule, RutValueAccessor, RutPipe, RutDirective, RutSignalDirective, Highlight, HighlightLineNumbers, JsonPipe],
   templateUrl: './rut-example.component.html',
   styleUrl: './rut-example.component.css'
 })
@@ -22,6 +23,27 @@ export class RutExampleComponent {
   // Deprecated example form
   deprecatedForm = this.fb.group({
     rut: ['', [Validators.required, rutValidator]]
+  });
+
+  // 🧪 EXPERIMENTAL: Signal Forms example
+  signalFormModel = signal({ rut: '' });
+
+  signalForm = form(this.signalFormModel, (f) => {
+    // Required validation
+    required(f.rut);
+
+    // Custom RUT validation
+    validate(f.rut, ({ value }) => {
+      const rutValue = value();
+      if (!rutValue) return undefined;
+
+      return rutValidate(rutValue)
+        ? undefined
+        : customError({
+            kind: 'invalidRut',
+            message: 'El RUT ingresado es inválido'
+          });
+    });
   });
 
   bash = `npm install ngx-rut-v2 --save`;
@@ -61,6 +83,57 @@ export class RutExampleComponent {
 
 <!-- ✅ RECOMMENDED: Use RutValueAccessor instead -->
 <input formControlName="rut" formatRut class="form-control" />`;
+
+  // Signal Forms code examples
+  signalFormsImplementation = `import { Component, signal } from '@angular/core';
+import { form, validate, customError, required } from '@angular/forms/signals';
+import { RutSignalDirective, rutValidate } from 'ngx-rut-v2';
+
+@Component({
+  selector: 'app-rut-example',
+  imports: [RutSignalDirective],
+  templateUrl: './rut-example.component.html'
+})
+export class RutExampleComponent {
+  signalFormModel = signal({ rut: '' });
+
+  signalForm = form(this.signalFormModel, (f) => {
+    required(f.rut);
+
+    validate(f.rut, ({ value }) => {
+      const rutValue = value();
+      if (!rutValue) return undefined;
+
+      return rutValidate(rutValue)
+        ? undefined
+        : customError({ kind: 'invalidRut', message: 'RUT inválido' });
+    });
+  });
+}`;
+
+  signalFormsTemplate = `<form>
+  <label for="rut-signal">RUT (Signal Forms):</label>
+  <input
+    id="rut-signal"
+    rutSignal
+    [(value)]="signalForm.rut().value"
+    class="form-control"
+  />
+
+  @if (signalForm.rut().invalid()) {
+    <div class="text-danger">
+      @for (error of signalForm.rut().errors(); track error.kind) {
+        <div>{{ error.message }}</div>
+      }
+    </div>
+  }
+
+  @if (signalForm.rut().valid() && signalForm.rut().value()) {
+    <div class="text-success">✓ El RUT es válido</div>
+  }
+</form>
+
+<!-- Display form value -->\n<p>Valor: {{ signalForm().value() | json }}</p>`;
 
   /**
    * Simulates a programmatic update to test formatting persistence

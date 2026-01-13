@@ -1,5 +1,6 @@
 import { Directive, ElementRef, HostListener, forwardRef, input } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { separadorClean, separadorFormat, separadorParse } from '../helpers/separador-helpers';
 
 @Directive({
   selector: 'input[libSeparadorMiles]',
@@ -41,7 +42,7 @@ export class SeparadorMilesAccessor implements ControlValueAccessor {
 
   writeValue(value: any): void {
     const input = this.el.nativeElement;
-    const formatted = this.formatValue(value);
+    const formatted = separadorFormat(value, this.config());
     // Always update value for initial display
     if (input.value !== formatted) {
       const prevLength = input.value.length;
@@ -74,20 +75,19 @@ export class SeparadorMilesAccessor implements ControlValueAccessor {
     const value = (event.target as HTMLInputElement).value;
     const input = this.el.nativeElement;
     const decSep = this.decimalSeparator;
-    // Sanitize: allow only digits and a single decimal separator
-    let sanitized = value.replaceAll(new RegExp(`[^0-9${decSep}]`, 'g'), '');
-    const firstSep = sanitized.indexOf(decSep);
-    if (firstSep !== -1) {
-      sanitized = sanitized.substring(0, firstSep + 1) + sanitized.substring(firstSep + 1).replaceAll(new RegExp(`[${decSep}]`, 'g'), '');
-    }
-    // Parse and always format for display, even for partial decimals
-    const raw = this.parseValue(sanitized);
+
+    // Use separadorClean helper for sanitization
+    const sanitized = separadorClean(value, this.config());
+
+    // Parse using helper function
+    const raw = separadorParse(sanitized, this.config());
     this.onChange(raw);
+    // Format for display, preserving partial decimals (e.g., '123,')
     let formatted = sanitized;
     if (sanitized !== '') {
-      // Format even for partial decimals (e.g., '123,')
       const [intPart, decPart] = sanitized.split(decSep);
-      let intFormatted = intPart.replaceAll(/\B(?=(\d{3})+(?!\d))/g, this.thousandSeparator);
+      const thousandSep = this.config().thousandSeparator ?? '.';
+      let intFormatted = intPart.replaceAll(/\B(?=(\d{3})+(?!\d))/g, thousandSep);
       formatted = decPart === undefined ? intFormatted : intFormatted + decSep + decPart;
     }
     if (input.value !== formatted) {
@@ -113,33 +113,11 @@ export class SeparadorMilesAccessor implements ControlValueAccessor {
     } else {
       // Always format for display, even for partial decimals
       const decSep = this.decimalSeparator;
+      const thousandSep = this.config().thousandSeparator ?? '.';
       const [intPart, decPart] = input.value.split(decSep);
-      let intFormatted = intPart.replaceAll(/\B(?=(\d{3})+(?!\d))/g, this.thousandSeparator);
+      let intFormatted = intPart.replaceAll(/\B(?=(\d{3})+(?!\d))/g, thousandSep);
       input.value = decPart === undefined ? intFormatted : intFormatted + decSep + decPart;
     }
     this.onTouched();
-  }
-
-  private formatValue(value: any): string {
-    if (value === null || value === undefined || value === '') return '';
-    let [integer, decimal] = String(value).replaceAll(/[^\d.,-]/g, '').split(/[.,]/);
-    let sign = '';
-    if (integer.startsWith('-')) {
-      sign = '-';
-      integer = integer.slice(1);
-    }
-    integer = integer.replaceAll(/\B(?=(\d{3})+(?!\d))/g, this.thousandSeparator);
-    if (this.allowDecimals && decimal !== undefined) {
-      return sign + integer + this.decimalSeparator + decimal;
-    }
-    return sign + integer;
-  }
-  private parseValue(value: string): number | null {
-    if (!value) return null;
-    // Remove all non-numeric except decimal
-    let val = value.replaceAll(new RegExp(`[^0-9${this.decimalSeparator}]`, 'g'), '');
-    val = val.replaceAll(this.decimalSeparator, '.');
-    const num = Number.parseFloat(val);
-    return Number.isNaN(num) ? null : num;
   }
 }

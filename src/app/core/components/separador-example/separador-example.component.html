@@ -35,3 +35,61 @@
     </pre>
   </div>
 </div>
+
+<!-- Signal Forms Section -->
+<div class="row justify-content-center bg-warning-subtle border border-warning border-2 shadow my-3 p-4 rounded-2">
+  <div class="col-12 mb-3">
+    <h4>🧪 Signal Forms - Experimental (Angular 21+)</h4>
+    <p class="text-warning-emphasis">
+      <strong>⚠️ EXPERIMENTAL:</strong> Usa la API experimental de Signal Forms de Angular 21 (<code>@angular/forms/signals</code>).
+      La API puede cambiar hasta que se vuelva estable. Requiere Angular 21.0.0+.
+    </p>
+  </div>
+
+  <div class="col-md-6">
+    <form>
+      <label for="amount-signal" class="form-label">Monto en CLP$ (Signal Forms):</label>
+      <input
+        separadorSignal
+        [(value)]="signalForm.amount().value"
+        id="amount-signal"
+        class="form-control form-control-lg"
+      />
+    </form>
+
+    @if (signalForm.amount().errors(); as errors) {
+      @for (error of errors; track error.kind) {
+        @if (error.kind === 'required') {
+          <div class="text-danger mt-2">El monto es requerido</div>
+        }
+        @if (error.kind === 'minValue') {
+          <div class="text-danger mt-2"><strong>{{ error.message }}</strong></div>
+        }
+        @if (error.kind === 'maxValue') {
+          <div class="text-danger mt-2"><strong>{{ error.message }}</strong></div>
+        }
+      }
+    }
+
+    @if (signalForm.amount().valid() && signalForm.amount().value()) {
+      <div class="text-success mt-2">✓ El monto es <strong>válido</strong></div>
+    }
+
+    <pre class="shadow-lg my-3 rounded-3">
+      <code [highlight]="signalForm().value() | json" language="json" lineNumbers></code>
+    </pre>
+
+    <p class="text-muted"><small><strong>Nota:</strong> Display muestra formato chileno (1.350.689), el valor del formulario contiene el número sin formato (1350689)</small></p>
+  </div>
+
+  <div class="col-md-6">
+    <h5>Implementación Signal Forms:</h5>
+    <pre class="shadow-lg my-3 rounded-3">
+      <code [highlight]="textoSignalImplementacion" language="ts" lineNumbers></code>
+    </pre>
+
+    <pre class="shadow-lg my-3 rounded-3">
+      <code [highlight]="textoSignalTemplate" language="html" lineNumbers></code>
+    </pre>
+  </div>
+</div>

@@ -81,16 +81,19 @@
     <form>
       <label for="rut-signal" class="form-label">RUT (usando rutSignal - Signal Forms):</label>
       <input class="form-control form-control-lg" rutSignal [(value)]="signalForm.rut().value" id="rut-signal" />
-
-      @if (signalForm.rut().invalid() && signalForm.rut().touched()) {
-        <div class="mt-2">
-          @for (error of signalForm.rut().errors(); track error.kind) {
-            <div class="text-danger">{{ error.message }}</div>
+      
+      @if (signalForm.rut().errors(); as errors) {
+        @for (error of errors; track error.kind) {
+          @if (error.kind === 'required') {
+            <div class="text-danger mt-2">El RUT es requerido</div>
           }
-        </div>
+          @if (error.kind === 'invalidRut') {
+            <div class="text-danger mt-2">El RUT ingresado es <strong>inválido</strong></div>
+          }
+        }
       }
-
-      @if (signalForm.rut().valid() && signalForm.rut().value() && signalForm.rut().touched()) {
+      
+      @if (signalForm.rut().valid() && signalForm.rut().value()) {
         <div class="text-success mt-2">✓ El RUT es <strong>válido</strong></div>
       }
     </form>

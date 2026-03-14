@@ -1,14 +1,14 @@
 import { JsonPipe } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { form, validate, customError, required } from '@angular/forms/signals';
+import { FormField, form, validate, required } from '@angular/forms/signals';
 import { Highlight } from 'ngx-highlightjs';
 import { HighlightLineNumbers } from 'ngx-highlightjs/line-numbers';
 import { SeparadorMilesAccessor, SeparadorSignalDirective } from 'ngx-separador-miles';
 
 @Component({
   selector: 'app-separador-example',
-  imports: [ReactiveFormsModule, SeparadorMilesAccessor, SeparadorSignalDirective, Highlight, HighlightLineNumbers, JsonPipe],
+  imports: [ReactiveFormsModule, SeparadorMilesAccessor, SeparadorSignalDirective, FormField, Highlight, HighlightLineNumbers, JsonPipe],
   templateUrl: './separador-example.component.html',
   styleUrl: './separador-example.component.css'
 })
@@ -32,7 +32,7 @@ export class SeparadorExampleComponent {
       if (amount === null || amount === undefined) return undefined;
       return amount >= 1000
         ? undefined
-        : customError({ kind: 'minValue', message: 'El monto mínimo es $1.000' });
+        : { kind: 'minValue', message: 'El monto mínimo es $1.000' };
     });
 
     // Max value validation: $100.000.000
@@ -41,7 +41,7 @@ export class SeparadorExampleComponent {
       if (amount === null || amount === undefined) return undefined;
       return amount <= 100000000
         ? undefined
-        : customError({ kind: 'maxValue', message: 'El monto máximo es $100.000.000' });
+        : { kind: 'maxValue', message: 'El monto máximo es $100.000.000' };
     });
   });
 
@@ -72,12 +72,12 @@ export class SeparadorExampleComponent {
   `;
 
   textoSignalImplementacion = `import { Component, signal } from '@angular/core';
-import { form, validate, customError, required } from '@angular/forms/signals';
+import { FormField, form, validate, required } from '@angular/forms/signals';
 import { SeparadorSignalDirective } from 'ngx-separador-miles';
 
 @Component({
   selector: 'app-separador-example',
-  imports: [SeparadorSignalDirective],
+  imports: [SeparadorSignalDirective, FormField],
   templateUrl: './separador-example.component.html'
 })
 export class SeparadorExampleComponent {
@@ -91,7 +91,7 @@ export class SeparadorExampleComponent {
       if (amount === null || amount === undefined) return undefined;
       return amount >= 1000
         ? undefined
-        : customError({ kind: 'minValue', message: 'El monto mínimo es $1.000' });
+        : { kind: 'minValue', message: 'El monto mínimo es $1.000' };
     });
   });
 }
@@ -101,12 +101,12 @@ export class SeparadorExampleComponent {
   <label for="amount-signal">Monto en CLP$:</label>
   <input
     separadorSignal
-    [(value)]="signalForm.amount().value"
+    [formField]="signalForm.amount"
     id="amount-signal"
   />
 
-  @if (signalForm.amount().errors(); as errors) {
-    @for (error of errors; track error.kind) {
+  @if (signalForm.amount().touched() && signalForm.amount().invalid()) {
+    @for (error of signalForm.amount().errors(); track error.kind) {
       @if (error.kind === 'required') {
         <div class="text-danger">El monto es requerido</div>
       }
@@ -116,7 +116,7 @@ export class SeparadorExampleComponent {
     }
   }
 
-  @if (signalForm.amount().valid() && signalForm.amount().value()) {
+  @if (signalForm.amount().valid()) {
     <div class="text-success">✓ Monto válido</div>
   }
 </form>

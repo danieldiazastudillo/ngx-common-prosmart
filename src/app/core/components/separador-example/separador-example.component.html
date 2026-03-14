@@ -51,14 +51,14 @@
       <label for="amount-signal" class="form-label">Monto en CLP$ (Signal Forms):</label>
       <input
         separadorSignal
-        [(value)]="signalForm.amount().value"
+        [formField]="signalForm.amount"
         id="amount-signal"
         class="form-control form-control-lg"
       />
     </form>
 
-    @if (signalForm.amount().errors(); as errors) {
-      @for (error of errors; track error.kind) {
+    @if (signalForm.amount().touched() && signalForm.amount().invalid()) {
+      @for (error of signalForm.amount().errors(); track error.kind) {
         @if (error.kind === 'required') {
           <div class="text-danger mt-2">El monto es requerido</div>
         }
@@ -71,7 +71,7 @@
       }
     }
 
-    @if (signalForm.amount().valid() && signalForm.amount().value()) {
+    @if (signalForm.amount().valid() && signalForm.amount().value() !== null) {
       <div class="text-success mt-2">✓ El monto es <strong>válido</strong></div>
     }
 

@@ -1,6 +1,6 @@
 
 import { Directive, ElementRef, Renderer2, HostListener, inject } from '@angular/core';
-import { rutFormat, rutClean } from '../helpers/rut-helpers';
+import { rutFormat, rutClean, isAllowedRutKey } from '../helpers/rut-helpers';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Directive({
@@ -27,9 +27,8 @@ export class RutValueAccessor implements ControlValueAccessor {
     const cursorPosition = input.selectionStart || 0;
     const previousValue = input.value;
 
-    // Get the raw value and clean it (only numbers and K)
-    const rawValue = input.value.toUpperCase();
-    const cleaned = rutClean(rawValue);
+    // Clean the raw value (rutClean handles uppercase conversion internally)
+    const cleaned = rutClean(input.value);
 
     // Format the cleaned value for display
     const formatted = rutFormat(cleaned);
@@ -57,20 +56,7 @@ export class RutValueAccessor implements ControlValueAccessor {
 
   @HostListener('keydown', ['$event'])
   onKeyDown(event: KeyboardEvent) {
-    const key = event.key;
-
-    // Allow: backspace, delete, tab, escape, enter, arrows, home, end
-    if (['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', 'ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(key)) {
-      return;
-    }
-
-    // Allow: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
-    if (event.ctrlKey || event.metaKey) {
-      return;
-    }
-
-    // Allow only numbers and K/k
-    if (!/^[0-9kK]$/.test(key)) {
+    if (!isAllowedRutKey(event)) {
       event.preventDefault();
     }
   }

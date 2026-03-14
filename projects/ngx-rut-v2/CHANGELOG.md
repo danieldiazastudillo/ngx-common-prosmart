@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.0] - 2026-01-14
+
+### Added
+- `isAllowedRutKey(event: KeyboardEvent): boolean` helper exported from `rut-helpers` — shared key-filter logic for building custom RUT controls
+- `effect()` in `RutSignalDirective` constructor — programmatic value changes (e.g. `field.set(...)`) now update the displayed formatted value without interrupting active typing
+- `@angular/forms` added to library `peerDependencies` (required for Signal Forms support via `@angular/forms/signals`)
+
+### Fixed
+- `RutValidator` directive now correctly declares `standalone: true`
+- README: corrected Signal Forms binding attribute from `[field]` to `[formField]` (the officially documented `@Input('formField')` attribute)
+- README: removed non-official `customError()` API from all code examples; validation callbacks now return plain `{ kind, message }` objects per the Angular Signal Forms spec
+
+### Changed
+- `RutValueAccessor` and `RutSignalDirective` both delegate `onKeyDown` filtering to the shared `isAllowedRutKey()` helper (eliminates 10-line duplication)
+- Removed redundant `.toUpperCase()` call before `rutClean()` in both directives — `rutClean()` already handles casing internally
+
 ## [2.1.0] - 2026-01-02
 
 ### Added

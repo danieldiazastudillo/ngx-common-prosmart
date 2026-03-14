@@ -13,6 +13,7 @@ export const rutValidator: ValidatorFn = (control: AbstractControl): ValidationE
 
 @Directive({
   selector: '[validateRut][ngModel],[validateRut][formControl]',
+  standalone: true,
   providers: [
     { provide: NG_VALIDATORS, useExisting: forwardRef(() => RutValidator), multi: true },
   ]

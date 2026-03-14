@@ -1,14 +1,14 @@
 import { JsonPipe } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { form, validate, customError, required } from '@angular/forms/signals';
+import { FormField, form, validate, required } from '@angular/forms/signals';
 import { Highlight } from 'ngx-highlightjs';
 import { HighlightLineNumbers } from 'ngx-highlightjs/line-numbers';
 import { rutValidator, RutValueAccessor, RutPipe, RutDirective, RutSignalDirective, rutValidate } from 'ngx-rut-v2';
 
 @Component({
   selector: 'app-rut-example',
-  imports: [ReactiveFormsModule, RutValueAccessor, RutPipe, RutDirective, RutSignalDirective, Highlight, HighlightLineNumbers, JsonPipe],
+  imports: [ReactiveFormsModule, RutValueAccessor, RutPipe, RutDirective, RutSignalDirective, FormField, Highlight, HighlightLineNumbers, JsonPipe],
   templateUrl: './rut-example.component.html',
   styleUrl: './rut-example.component.css'
 })
@@ -39,10 +39,7 @@ export class RutExampleComponent {
 
       return rutValidate(rutValue)
         ? undefined
-        : customError({
-            kind: 'invalidRut',
-            message: 'El RUT ingresado es inválido'
-          });
+        : { kind: 'invalidRut', message: 'El RUT ingresado es inválido' };
     });
   });
 
@@ -86,12 +83,12 @@ export class RutExampleComponent {
 
   // Signal Forms code examples
   signalFormsImplementation = `import { Component, signal } from '@angular/core';
-import { form, validate, customError, required } from '@angular/forms/signals';
+import { FormField, form, validate, required } from '@angular/forms/signals';
 import { RutSignalDirective, rutValidate } from 'ngx-rut-v2';
 
 @Component({
   selector: 'app-rut-example',
-  imports: [RutSignalDirective],
+  imports: [FormField, RutSignalDirective],
   templateUrl: './rut-example.component.html'
 })
 export class RutExampleComponent {
@@ -106,7 +103,7 @@ export class RutExampleComponent {
 
       return rutValidate(rutValue)
         ? undefined
-        : customError({ kind: 'invalidRut', message: 'RUT inválido' });
+        : { kind: 'invalidRut', message: 'RUT inválido' };
     });
   });
 }`;
@@ -116,11 +113,11 @@ export class RutExampleComponent {
   <input
     id="rut-signal"
     rutSignal
-    [(value)]="signalForm.rut().value"
+    [formField]="signalForm.rut"
     class="form-control"
   />
 
-  @if (signalForm.rut().invalid()) {
+  @if (signalForm.rut().touched() && signalForm.rut().invalid()) {
     <div class="text-danger">
       @for (error of signalForm.rut().errors(); track error.kind) {
         <div>{{ error.message }}</div>

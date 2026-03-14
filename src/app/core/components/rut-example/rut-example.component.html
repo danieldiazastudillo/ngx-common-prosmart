@@ -80,10 +80,10 @@
 
     <form>
       <label for="rut-signal" class="form-label">RUT (usando rutSignal - Signal Forms):</label>
-      <input class="form-control form-control-lg" rutSignal [(value)]="signalForm.rut().value" id="rut-signal" />
+      <input class="form-control form-control-lg" rutSignal [formField]="signalForm.rut" id="rut-signal" />
 
-      @if (signalForm.rut().errors(); as errors) {
-        @for (error of errors; track error.kind) {
+      @if (signalForm.rut().touched() && signalForm.rut().invalid()) {
+        @for (error of signalForm.rut().errors(); track error.kind) {
           @if (error.kind === 'required') {
             <div class="text-danger mt-2">El RUT es requerido</div>
           }

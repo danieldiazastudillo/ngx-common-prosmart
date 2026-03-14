@@ -1,6 +1,6 @@
-import { Directive, ElementRef, HostListener, inject, input, model } from '@angular/core';
+import { Directive, ElementRef, HostListener, inject, input, model, effect } from '@angular/core';
 import { FormValueControl, ValidationError, WithOptionalField } from '@angular/forms/signals';
-import { rutClean, rutFormat } from '../helpers/rut-helpers';
+import { rutClean, rutFormat, isAllowedRutKey } from '../helpers/rut-helpers';
 
 /**
  * Signal Forms directive for RUT formatting and validation.
@@ -64,6 +64,19 @@ import { rutClean, rutFormat } from '../helpers/rut-helpers';
 export class RutSignalDirective implements FormValueControl<string> {
   private readonly elementRef = inject(ElementRef);
 
+  constructor() {
+    // Sync the display value when the model is updated programmatically
+    // (e.g. via patchValue, model.set(), or form reset). Skip the update
+    // while the input is focused to not interfere with active user typing.
+    effect(() => {
+      const clean = this.value();
+      const input = this.elementRef.nativeElement as HTMLInputElement;
+      if (document.activeElement !== input) {
+        input.value = clean ? rutFormat(clean) : '';
+      }
+    });
+  }
+
   /**
    * Required: The clean RUT value (without formatting) for the form model.
    * This is a two-way binding signal that automatically syncs with the form.
@@ -116,9 +129,8 @@ export class RutSignalDirective implements FormValueControl<string> {
     const cursorPosition = input.selectionStart || 0;
     const previousValue = input.value;
 
-    // Get the raw value and clean it (only numbers and K)
-    const rawValue = input.value.toUpperCase();
-    const cleaned = rutClean(rawValue);
+    // Clean the raw value (rutClean handles uppercase conversion internally)
+    const cleaned = rutClean(input.value);
 
     // Update the model value with cleaned RUT
     this.value.set(cleaned);
@@ -153,20 +165,7 @@ export class RutSignalDirective implements FormValueControl<string> {
    */
   @HostListener('keydown', ['$event'])
   onKeyDown(event: KeyboardEvent): void {
-    const key = event.key;
-
-    // Allow: backspace, delete, tab, escape, enter, arrows, home, end
-    if (['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', 'ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(key)) {
-      return;
-    }
-
-    // Allow: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
-    if (event.ctrlKey || event.metaKey) {
-      return;
-    }
-
-    // Allow only numbers and K/k
-    if (!/^[0-9kK]$/.test(key)) {
+    if (!isAllowedRutKey(event)) {
       event.preventDefault();
     }
   }

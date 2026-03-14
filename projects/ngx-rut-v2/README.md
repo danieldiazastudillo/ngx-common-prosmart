@@ -227,6 +227,7 @@ A Signal Forms-compatible directive for RUT formatting and validation using Angu
 - ✅ Automatic uppercase conversion
 - ✅ Clean value in form model, formatted value in display
 - ✅ Automatic form state synchronization
+- ✅ Programmatic value updates (model.set(), form reset) reflected in display
 
 ### Installation
 
@@ -240,13 +241,13 @@ npm install --save ngx-rut-v2
 
 ```typescript
 import { Component, signal } from '@angular/core';
-import { form, validate, customError, required } from '@angular/forms/signals';
+import { FormField, form, validate, required } from '@angular/forms/signals';
 import { RutSignalDirective, rutValidate } from 'ngx-rut-v2';
 
 @Component({
   selector: 'app-user-form',
   standalone: true,
-  imports: [RutSignalDirective],
+  imports: [FormField, RutSignalDirective],
   templateUrl: './user-form.component.html'
 })
 export class UserFormComponent {
@@ -268,10 +269,7 @@ export class UserFormComponent {
       
       return rutValidate(rutValue) 
         ? undefined 
-        : customError({ 
-            kind: 'invalidRut', 
-            message: 'El RUT ingresado es inválido' 
-          });
+        : { kind: 'invalidRut', message: 'El RUT ingresado es inválido' };
     });
   });
 }
@@ -285,12 +283,12 @@ export class UserFormComponent {
   <input 
     id="rut" 
     rutSignal 
-    [field]="userForm.rut" 
+    [formField]="userForm.rut" 
     class="form-control" 
   />
   
-  <!-- Display validation errors -->
-  @if (userForm.rut().invalid()) {
+  <!-- Display validation errors (only after the user has touched the field) -->
+  @if (userForm.rut().touched() && userForm.rut().invalid()) {
     <div class="text-danger">
       @for (error of userForm.rut().errors(); track error.kind) {
         <div>{{ error.message }}</div>
@@ -360,7 +358,7 @@ userForm = form(this.userModel, (f) => {
     if (!rutValue) return undefined;
     return rutValidate(rutValue) 
       ? undefined 
-      : customError({ kind: 'invalidRut', message: 'RUT inválido' });
+      : { kind: 'invalidRut', message: 'RUT inválido' };
   });
   
   // Validate RUT confirmation (automatically re-runs when f.rut changes!)
@@ -369,10 +367,7 @@ userForm = form(this.userModel, (f) => {
     const originalValue = valueOf(f.rut);
     
     return confirmValue !== originalValue
-      ? customError({ 
-          kind: 'rutMismatch', 
-          message: 'Los RUTs no coinciden' 
-        })
+      ? { kind: 'rutMismatch', message: 'Los RUTs no coinciden' }
       : undefined;
   });
 });
@@ -401,7 +396,7 @@ Both directives coexist peacefully with different selectors:
 <input formControlName="rut" formatRut />
 
 <!-- Signal Forms (experimental) -->
-<input rutSignal [field]="userForm.rut" />
+<input rutSignal [formField]="userForm.rut" />
 ```
 
 You can use both in the same application during gradual migration.
@@ -410,9 +405,27 @@ You can use both in the same application during gradual migration.
 
 - **Angular Version**: Requires Angular 21.0.0 or higher
 - **API Stability**: The Signal Forms API is marked as `@experimental` and may change
+- **Import `FormField`**: You must import `FormField` from `@angular/forms/signals` alongside `RutSignalDirective` when using `[formField]`
 - **Browser Support**: Same as Angular (modern browsers)
 - **Performance**: Signal-based reactivity is more efficient than zone-based change detection
 - **Future**: Signal Forms will become the recommended approach once API stabilizes
+
+### Advanced: Custom Controls
+
+If you are building your own custom control that handles RUT input (e.g. wrapping `RutSignalDirective`), you can reuse the same key filtering logic exported from the library:
+
+```typescript
+import { isAllowedRutKey } from 'ngx-rut-v2';
+
+@HostListener('keydown', ['$event'])
+onKeyDown(event: KeyboardEvent): void {
+  if (!isAllowedRutKey(event)) {
+    event.preventDefault();
+  }
+}
+```
+
+`isAllowedRutKey` encodes the RUT input rule: allow digits `0-9` and the verifier digit character `K`/`k`, plus all navigation/clipboard shortcuts.
 
 
 

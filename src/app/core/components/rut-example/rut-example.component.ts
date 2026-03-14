@@ -4,25 +4,41 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormField, form, validate, required } from '@angular/forms/signals';
 import { Highlight } from 'ngx-highlightjs';
 import { HighlightLineNumbers } from 'ngx-highlightjs/line-numbers';
-import { rutValidator, RutValueAccessor, RutPipe, RutDirective, RutSignalDirective, rutValidate } from 'ngx-rut-v2';
+import {
+  rutValidator,
+  RutValueAccessor,
+  RutPipe,
+  RutDirective,
+  RutSignalDirective,
+  rutValidate,
+} from 'ngx-rut-v2';
 
 @Component({
   selector: 'app-rut-example',
-  imports: [ReactiveFormsModule, RutValueAccessor, RutPipe, RutDirective, RutSignalDirective, FormField, Highlight, HighlightLineNumbers, JsonPipe],
+  imports: [
+    ReactiveFormsModule,
+    RutValueAccessor,
+    RutPipe,
+    RutDirective,
+    RutSignalDirective,
+    FormField,
+    Highlight,
+    HighlightLineNumbers,
+    JsonPipe,
+  ],
   templateUrl: './rut-example.component.html',
-  styleUrl: './rut-example.component.css'
+  styleUrl: './rut-example.component.css',
 })
 export class RutExampleComponent {
-
   private readonly fb = inject(FormBuilder);
 
   form = this.fb.group({
-    rut: ['', [Validators.required, rutValidator]]
+    rut: ['', [Validators.required, rutValidator]],
   });
 
   // Deprecated example form
   deprecatedForm = this.fb.group({
-    rut: ['', [Validators.required, rutValidator]]
+    rut: ['', [Validators.required, rutValidator]],
   });
 
   // 🧪 EXPERIMENTAL: Signal Forms example
@@ -150,10 +166,10 @@ export class RutExampleComponent {
     // Show alert confirming the value was re-applied
     alert(
       `Programmatic Update Test:\n\n` +
-      `Current RUT value: ${rutToSet}\n` +
-      `Action: Re-applied via patchValue()\n\n` +
-      `✓ Check the input - formatting should be preserved!\n` +
-      `(The input should still show formatted: XX.XXX.XXX-X)`
+        `Current RUT value: ${rutToSet}\n` +
+        `Action: Re-applied via patchValue()\n\n` +
+        `✓ Check the input - formatting should be preserved!\n` +
+        `(The input should still show formatted: XX.XXX.XXX-X)`,
     );
   }
 
@@ -168,9 +184,9 @@ export class RutExampleComponent {
     const formattedValue = this.deprecatedForm.get('rut')?.value || '';
     alert(
       `Deprecated Directive Test:\n\n` +
-      `Value set: ${testRut}\n` +
-      `Form control value: ${formattedValue}\n\n` +
-      `⚠️ Check console for deprecation warning!`
+        `Value set: ${testRut}\n` +
+        `Form control value: ${formattedValue}\n\n` +
+        `⚠️ Check console for deprecation warning!`,
     );
   }
 }

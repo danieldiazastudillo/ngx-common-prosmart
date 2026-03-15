@@ -25,11 +25,10 @@ Check out the **[live examples and implementation guide](https://danieldiazastud
 | Versión ngx-separador-miles | Versión Angular | Estado |
 |----------------------------|-----------------|--------|
 | 0.0.1 - 0.0.2 | 19.2.0+ | ✅ Soportado |
-| 0.0.3 | 19.2.0 - 21.x | ✅ Actual (Recomendado) |
-| 0.1.x | 22.x | 📅 Planeado |
-| 1.0.x | 23.x | 📅 Planeado |
+| 1.0.x | 19.2.0 - 21.x | ✅ Actual (Recomendado) |
+| 1.1.x | 22.x | 📅 Planeado |
 
-> **Nota:** La versión 0.0.3 mantiene compatibilidad retroactiva con Angular 19.2.0+ pero está probada y optimizada para proyectos Angular 21.x.
+> **Nota:** La versión 1.0.x mantiene compatibilidad retroactiva con Angular 19.2.0+ pero está probada y optimizada para proyectos Angular 21.x.
 >
 > **Requisitos mínimos:**
 > - Angular: >=19.2.0
@@ -180,19 +179,19 @@ Signal Forms provide a modern, reactive approach to form management with:
 
 ```typescript
 import { Component, signal } from '@angular/core';
-import { form, required } from '@angular/forms/signals';
+import { FormField, form, required } from '@angular/forms/signals';
 import { SeparadorSignalDirective } from 'ngx-separador-miles';
 
 @Component({
   selector: 'app-price-signal',
   standalone: true,
-  imports: [SeparadorSignalDirective],
+  imports: [FormField, SeparadorSignalDirective],
   template: `
     <form>
       <label for="amount">Monto en CLP$:</label>
-      <input 
-        separadorSignal 
-        [(value)]="priceForm.amount().value"
+      <input
+        separadorSignal
+        [formField]="priceForm.amount"
         id="amount"
       />
       <p>Valor: {{ priceForm().value().amount }}</p>
@@ -214,24 +213,24 @@ export class PriceSignalComponent {
 
 ```typescript
 import { Component, signal } from '@angular/core';
-import { form, validate, customError, required } from '@angular/forms/signals';
+import { FormField, form, validate, required } from '@angular/forms/signals';
 import { SeparadorSignalDirective } from 'ngx-separador-miles';
 
 @Component({
   selector: 'app-advanced-signal',
   standalone: true,
-  imports: [SeparadorSignalDirective],
+  imports: [FormField, SeparadorSignalDirective],
   template: `
     <form>
       <label for="amount">Monto en CLP$:</label>
-      <input 
-        separadorSignal 
-        [(value)]="priceForm.amount().value"
+      <input
+        separadorSignal
+        [formField]="priceForm.amount"
         id="amount"
       />
-      
-      @if (priceForm.amount().errors(); as errors) {
-        @for (error of errors; track error.kind) {
+
+      @if (priceForm.amount().touched() && priceForm.amount().invalid()) {
+        @for (error of priceForm.amount().errors(); track error.kind) {
           @if (error.kind === 'required') {
             <div class="error">El monto es requerido</div>
           }
@@ -243,8 +242,8 @@ import { SeparadorSignalDirective } from 'ngx-separador-miles';
           }
         }
       }
-      
-      @if (priceForm.amount().valid() && priceForm.amount().value()) {
+
+      @if (priceForm.amount().valid() && priceForm.amount().value() !== null) {
         <div class="success">✓ Monto válido</div>
       }
     </form>
@@ -255,23 +254,23 @@ export class AdvancedSignalComponent {
 
   priceForm = form(this.priceModel, (f) => {
     required(f.amount);
-    
+
     // Custom validation: min value
     validate(f.amount, ({ value }) => {
       const amount = value();
       if (amount === null || amount === undefined) return undefined;
       return amount >= 1000
         ? undefined
-        : customError({ kind: 'minValue', message: 'El monto mínimo es $1.000' });
+        : { kind: 'minValue' as const, message: 'El monto mínimo es $1.000' };
     });
-    
+
     // Custom validation: max value
     validate(f.amount, ({ value }) => {
       const amount = value();
       if (amount === null || amount === undefined) return undefined;
       return amount <= 100000000
         ? undefined
-        : customError({ kind: 'maxValue', message: 'El monto máximo es $100.000.000' });
+        : { kind: 'maxValue' as const, message: 'El monto máximo es $100.000.000' };
     });
   });
 }
@@ -283,19 +282,19 @@ For UF (Unidad de Fomento) values that require decimals:
 
 ```typescript
 import { Component, signal } from '@angular/core';
-import { form, required } from '@angular/forms/signals';
+import { FormField, form, required } from '@angular/forms/signals';
 import { SeparadorSignalDirective } from 'ngx-separador-miles';
 
 @Component({
   selector: 'app-uf-signal',
   standalone: true,
-  imports: [SeparadorSignalDirective],
+  imports: [FormField, SeparadorSignalDirective],
   template: `
     <form>
       <label for="uf">Valor en UF:</label>
-      <input 
-        separadorSignal 
-        [(value)]="ufForm.uf().value"
+      <input
+        separadorSignal
+        [formField]="ufForm.uf"
         [allowDecimals]="true"
         id="uf"
       />
@@ -306,7 +305,7 @@ import { SeparadorSignalDirective } from 'ngx-separador-miles';
 })
 export class UfSignalComponent {
   ufModel = signal({ uf: 1350689.5 as number | null });
-  
+
   ufForm = form(this.ufModel, (f) => {
     required(f.uf);
   });
@@ -317,13 +316,13 @@ export class UfSignalComponent {
 
 The `separadorSignal` directive accepts the same configuration as the Reactive Forms version:
 
-```typescript
-<input 
-  separadorSignal 
-  [(value)]="form.amount().value"
-  [thousandSeparator]="'.'"     // Default: '.' (Chilean CLP$: 1.350.689)
-  [decimalSeparator]="','"       // Default: ',' (Chilean UF: 1.350.689,5)
-  [allowDecimals]="true"         // Default: false (set true for UF values)
+```html
+<input
+  separadorSignal
+  [formField]="form.amount"
+  [thousandSeparator]="'.'"     <!-- Default: '.' (Chilean CLP$: 1.350.689) -->
+  [decimalSeparator]="','"      <!-- Default: ',' (Chilean UF: 1.350.689,5) -->
+  [allowDecimals]="true"        <!-- Default: false (set true for UF values) -->
 />
 ```
 

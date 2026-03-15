@@ -3,6 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 import { RutValueAccessor } from './rut-value-accessor.directive';
+import { describe, expect, it } from 'vitest';
 
 @Component({
   standalone: true,

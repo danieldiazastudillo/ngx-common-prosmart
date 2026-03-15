@@ -1,5 +1,5 @@
-import { Directive, ElementRef, HostListener, inject, input, model } from '@angular/core';
-import { FormValueControl, ValidationError, WithOptionalField } from '@angular/forms/signals';
+import { Directive, ElementRef, HostListener, effect, inject, input, model, untracked } from '@angular/core';
+import { FormValueControl, ValidationError, WithOptionalFieldTree } from '@angular/forms/signals';
 import { separadorClean, separadorFormat, separadorParse } from '../helpers/separador-helpers';
 
 /**
@@ -12,24 +12,23 @@ import { separadorClean, separadorFormat, separadorParse } from '../helpers/sepa
  * @example
  * ```typescript
  * import { Component, signal } from '@angular/core';
- * import { form, validate, customError, required } from '@angular/forms/signals';
+ * import { FormField, form, validate, required } from '@angular/forms/signals';
  * import { SeparadorSignalDirective } from 'ngx-separador-miles';
  *
  * @Component({
  *   selector: 'app-price-form',
  *   standalone: true,
- *   imports: [SeparadorSignalDirective],
+ *   imports: [FormField, SeparadorSignalDirective],
  *   template: `
  *     <form>
  *       <label for="amount">Monto en CLP$:</label>
  *       <input
  *         separadorSignal
- *         [(value)]="priceForm.amount().value"
- *         [allowDecimals]="true"
+ *         [formField]="priceForm.amount"
  *         id="amount"
  *       />
- *       @if (priceForm.amount().errors(); as errors) {
- *         @for (error of errors; track error.kind) {
+ *       @if (priceForm.amount().touched() && priceForm.amount().invalid()) {
+ *         @for (error of priceForm.amount().errors(); track error.kind) {
  *           <span class="error">{{ error.message }}</span>
  *         }
  *       }
@@ -46,7 +45,7 @@ import { separadorClean, separadorFormat, separadorParse } from '../helpers/sepa
  *       if (amount === null || amount === undefined) return undefined;
  *       return amount > 0
  *         ? undefined
- *         : customError({ kind: 'minValue', message: 'El monto debe ser mayor a 0' });
+ *         : { kind: 'minValue' as const, message: 'El monto debe ser mayor a 0' };
  *     });
  *   });
  * }
@@ -78,6 +77,28 @@ import { separadorClean, separadorFormat, separadorParse } from '../helpers/sepa
 export class SeparadorSignalDirective implements FormValueControl<number | null> {
   private readonly elementRef = inject(ElementRef);
 
+  constructor() {
+    // Sync the display value when the model is updated programmatically
+    // (e.g. via model.set(), form reset, or patchValue). Skip the update
+    // while the input is focused to not interfere with active user typing.
+    // Config signals are read via untracked() so the effect only re-runs when
+    // value() changes, not on every config update (avoids NG0100 in tests).
+    effect(() => {
+      const numericValue = this.value();
+      const input = this.elementRef.nativeElement as HTMLInputElement;
+      if (document.activeElement !== input) {
+        const config = untracked(() => ({
+          thousandSeparator: this.thousandSeparator(),
+          decimalSeparator: this.decimalSeparator(),
+          allowDecimals: this.allowDecimals()
+        }));
+        input.value = numericValue !== null && numericValue !== undefined
+          ? separadorFormat(numericValue, config)
+          : '';
+      }
+    });
+  }
+
   /**
    * Required: The numeric value for the form model.
    * This is a two-way binding signal that automatically syncs with the form.
@@ -100,7 +121,7 @@ export class SeparadorSignalDirective implements FormValueControl<number | null>
    * Optional: Validation errors from the form.
    * Automatically bound by the Field directive.
    */
-  readonly errors = input<readonly WithOptionalField<ValidationError>[]>([]);
+  readonly errors = input<readonly WithOptionalFieldTree<ValidationError>[]>([]);
 
   /**
    * Optional: Invalid state from the form.
@@ -162,7 +183,12 @@ export class SeparadorSignalDirective implements FormValueControl<number | null>
     };
 
     // Clean the input (remove invalid characters, allow only one decimal separator)
-    const cleaned = separadorClean(input.value, config);
+    // When decimals are not allowed, also strip any decimal separator that may
+    // have been pasted or set programmatically (keydown blocks it for typed input).
+    let cleaned = separadorClean(input.value, config);
+    if (!config.allowDecimals) {
+      cleaned = cleaned.replaceAll(config.decimalSeparator, '');
+    }
 
     // Parse the cleaned value to a number
     const numericValue = separadorParse(cleaned, config);

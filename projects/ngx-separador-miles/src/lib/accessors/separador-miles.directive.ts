@@ -1,4 +1,4 @@
-import { Directive, ElementRef, HostListener, forwardRef, input } from '@angular/core';
+import { Directive, ElementRef, HostListener, effect, forwardRef, input, signal, untracked } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { separadorClean, separadorFormat, separadorParse } from '../helpers/separador-helpers';
 
@@ -24,6 +24,8 @@ export class SeparadorMilesAccessor implements ControlValueAccessor {
     currency?: string;
   }>({});
 
+  private readonly storedValue = signal<any>(null);
+
   private onChange = (_: any) => {};
   private onTouched = () => {};
   private disabled = false;
@@ -38,9 +40,21 @@ export class SeparadorMilesAccessor implements ControlValueAccessor {
     return this.config().allowDecimals ?? false;
   }
 
-  constructor(private readonly el: ElementRef<HTMLInputElement>) {}
+  constructor(private readonly el: ElementRef<HTMLInputElement>) {
+    // Re-format the display when config changes (e.g. directive receives new separators).
+    // Reads storedValue() via untracked so the effect only tracks config(), not value changes.
+    effect(() => {
+      const config = this.config();
+      const stored = untracked(() => this.storedValue());
+      const inputEl = this.el.nativeElement;
+      if (document.activeElement === inputEl) return;
+      const formatted = separadorFormat(stored, config);
+      if (inputEl.value !== formatted) inputEl.value = formatted;
+    });
+  }
 
   writeValue(value: any): void {
+    this.storedValue.set(value);
     const input = this.el.nativeElement;
     const formatted = separadorFormat(value, this.config());
     // Always update value for initial display
@@ -70,6 +84,15 @@ export class SeparadorMilesAccessor implements ControlValueAccessor {
     this.disabled = isDisabled;
     this.el.nativeElement.disabled = isDisabled;
   }
+
+  parseValue(value: string): number | null {
+    return separadorParse(value, this.config());
+  }
+
+  formatValue(value: any): string {
+    return separadorFormat(value, this.config());
+  }
+
   @HostListener('input', ['$event'])
   onInput(event: Event) {
     const value = (event.target as HTMLInputElement).value;

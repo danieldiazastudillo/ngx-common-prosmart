@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.1] - 2026-03-14
+
+### Fixed
+- Added `effect()` constructor to `SeparadorSignalDirective` to automatically sync the input display value when the form model is updated programmatically (e.g. `model.set()`, form reset). This matches the existing behaviour in `ngx-rut-v2`.
+- Replaced deprecated `WithOptionalField<ValidationError>` type with `WithOptionalFieldTree<ValidationError>` in the Signal Forms directive.
+
+### Added
+- Test suite for `SeparadorSignalDirective` (`separador-signal.directive.spec.ts`) covering programmatic sync, input/blur/keydown event handling, cursor position restoration, and configurable separators.
+
+### Docs
+- Corrected Angular compatibility table (was showing incorrect version `0.0.3` as current; now shows `1.0.x`).
+- Updated all Signal Forms code examples to use the canonical `[formField]` binding with `FormField` imported (replaces the manual `[(value)]` pattern).
+- Removed stale references to `customError()` (removed from `@angular/forms/signals` API); validator callbacks now return plain objects `{ kind, message }`.
+
 ## [1.0.0] - 2026-01-02
 
 ### 🎉 First Stable Release

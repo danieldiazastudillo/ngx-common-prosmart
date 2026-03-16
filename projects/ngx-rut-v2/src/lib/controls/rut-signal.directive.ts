@@ -1,5 +1,5 @@
-import { Directive, ElementRef, HostListener, inject, input, model, effect } from '@angular/core';
-import { FormValueControl, ValidationError, WithOptionalField } from '@angular/forms/signals';
+import { Directive, ElementRef, HostListener, Renderer2, inject, input, model, effect } from '@angular/core';
+import { FormValueControl, ValidationError, WithOptionalFieldTree } from '@angular/forms/signals';
 import { rutClean, rutFormat, isAllowedRutKey } from '../helpers/rut-helpers';
 
 /**
@@ -12,18 +12,20 @@ import { rutClean, rutFormat, isAllowedRutKey } from '../helpers/rut-helpers';
  * @example
  * ```typescript
  * import { Component, signal } from '@angular/core';
- * import { form, validate, customError, required } from '@angular/forms/signals';
+ * import { FormField, form, validate, required } from '@angular/forms/signals';
  * import { RutSignalDirective, rutValidate } from 'ngx-rut-v2';
  *
  * @Component({
  *   selector: 'app-user-form',
  *   standalone: true,
- *   imports: [RutSignalDirective],
+ *   imports: [FormField, RutSignalDirective],
  *   template: `
  *     <form>
- *       <input rutSignal [field]="userForm.rut" />
- *       @if (userForm.rut().invalid()) {
- *         <span class="error">{{ userForm.rut().errors()[0]?.message }}</span>
+ *       <input rutSignal [formField]="userForm.rut" />
+ *       @if (userForm.rut().touched() && userForm.rut().invalid()) {
+ *         @for (error of userForm.rut().errors(); track error.kind) {
+ *           <span class="error">{{ error.message }}</span>
+ *         }
  *       }
  *     </form>
  *   `
@@ -38,7 +40,7 @@ import { rutClean, rutFormat, isAllowedRutKey } from '../helpers/rut-helpers';
  *       if (!rutValue) return undefined;
  *       return rutValidate(rutValue)
  *         ? undefined
- *         : customError({ kind: 'invalidRut', message: 'El RUT es inválido' });
+ *         : { kind: 'invalidRut', message: 'El RUT es inválido' };
  *     });
  *   });
  * }
@@ -63,6 +65,7 @@ import { rutClean, rutFormat, isAllowedRutKey } from '../helpers/rut-helpers';
 })
 export class RutSignalDirective implements FormValueControl<string> {
   private readonly elementRef = inject(ElementRef);
+  private readonly renderer = inject(Renderer2);
 
   constructor() {
     // Sync the display value when the model is updated programmatically
@@ -75,6 +78,24 @@ export class RutSignalDirective implements FormValueControl<string> {
         input.value = clean ? rutFormat(clean) : '';
       }
     });
+
+    // Propagate disabled state from the FormField directive to the native input.
+    effect(() => {
+      this.renderer.setProperty(this.elementRef.nativeElement, 'disabled', this.disabled());
+    });
+
+    // Propagate readonly state from the FormField directive to the native input.
+    effect(() => {
+      this.renderer.setProperty(this.elementRef.nativeElement, 'readOnly', this.readonly());
+    });
+
+    // Propagate name attribute from the FormField directive to the native input.
+    effect(() => {
+      const name = this.name();
+      if (name) {
+        this.renderer.setAttribute(this.elementRef.nativeElement, 'name', name);
+      }
+    });
   }
 
   /**
@@ -85,9 +106,15 @@ export class RutSignalDirective implements FormValueControl<string> {
 
   /**
    * Optional: Disabled state of the input.
-   * Automatically bound by the Field directive.
+   * Automatically bound by the FormField directive.
    */
   readonly disabled = input(false);
+
+  /**
+   * Optional: Readonly state of the input.
+   * Automatically bound by the FormField directive.
+   */
+  readonly readonly = input(false);
 
   /**
    * Optional: Touched state of the input.
@@ -97,25 +124,31 @@ export class RutSignalDirective implements FormValueControl<string> {
 
   /**
    * Optional: Validation errors from the form.
-   * Automatically bound by the Field directive.
+   * Automatically bound by the FormField directive.
    */
-  readonly errors = input<readonly WithOptionalField<ValidationError>[]>([]);
+  readonly errors = input<readonly WithOptionalFieldTree<ValidationError>[]>([]);
 
   /**
    * Optional: Invalid state from the form.
-   * Automatically bound by the Field directive.
+   * Automatically bound by the FormField directive.
    */
   readonly invalid = input(false);
 
   /**
+   * Optional: Valid state from the form.
+   * Automatically bound by the FormField directive.
+   */
+  readonly valid = input(false);
+
+  /**
    * Optional: Required state from the form.
-   * Automatically bound by the Field directive.
+   * Automatically bound by the FormField directive.
    */
   readonly required = input(false);
 
   /**
    * Optional: Name attribute for the input.
-   * Automatically bound by the Field directive.
+   * Automatically bound by the FormField directive.
    */
   readonly name = input('');
 

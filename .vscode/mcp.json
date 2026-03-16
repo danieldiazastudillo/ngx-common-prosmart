@@ -2,7 +2,12 @@
   "servers": {
      "chrome-devtools": {
       "command": "npx",
-      "args": ["-y", "chrome-devtools-mcp@latest"]
+      "args": [
+        "-y",
+        "chrome-devtools-mcp@latest",
+        "--autoConnect",
+        "--channel=beta"
+      ]
     },
     "angular-cli": {
       "command": "npx",

@@ -336,7 +336,7 @@ async onSubmit() {
 **Display Value vs Form Value:**
 
 ```html
-<input rutSignal [field]="userForm.rut" />
+<input rutSignal [formField]="userForm.rut" />
 ```
 
 While user types: `12345678k`

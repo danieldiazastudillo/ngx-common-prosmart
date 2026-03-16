@@ -26,6 +26,8 @@ A lightweight Angular directive for formatting numbers with thousands separators
 - ✅ Maintains cursor position during formatting
 - ✅ Tested and recommended for Angular 21.x projects
 
+> ⚠️ **Signal Forms require Angular 21.0.0+** — The `@angular/forms/signals` API (`separadorSignal` directive) is marked `@experimental` by Angular and may change before stabilizing. The standard `libSeparadorMiles` directive works on Angular 19.2.0+. [See full Signal Forms docs](./projects/ngx-separador-miles/README.md#-signal-forms-experimental---angular-21).
+
 **Compatibilidad Angular:**
 
 | ngx-separador-miles | Angular | Estado |
@@ -71,6 +73,8 @@ An Angular library for validating and formatting Chilean RUT (Rol Único Tributa
 - ✅ **NEW**: Experimental Signal Forms support (Angular 21+)
 - ✅ Zero external dependencies (except Angular)
 - ✅ Fully typed TypeScript implementation
+
+> ⚠️ **Signal Forms require Angular 21.0.0+** — The `@angular/forms/signals` API (`rutSignal` directive) is marked `@experimental` by Angular and may change before stabilizing. The standard `formatRut` directive works on Angular 20.0.0+. [See full Signal Forms docs](./projects/ngx-rut-v2/README.md#-signal-forms-experimental---angular-21).
 
 **Compatibilidad Angular:**
 

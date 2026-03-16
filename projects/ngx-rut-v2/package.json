@@ -8,7 +8,7 @@
   "description": "Angular library to format and validate RUT (Rol Único Tributario) from Chile",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/danieldiazastudillo/ngx-rut-v2.git"
+    "url": "git+https://github.com/danieldiazastudillo/ngx-common-prosmart.git"
   },
   "peerDependencies": {
     "@angular/common": ">=20.0.0 <22.0.0",

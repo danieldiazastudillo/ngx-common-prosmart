@@ -14,7 +14,8 @@ Valida y formatea [RUT Chilenos](https://en.wikipedia.org/wiki/National_identifi
 | 1.8.0              | 20              | ✅ Soportado |
 | 1.9.0              | 21              | ✅ Soportado |
 | 1.10.0             | 21              | ✅ Soportado |
-| **2.1.0**          | **21**          | **✅ Actual (Recomendado)** |
+| 2.1.0              | 21              | ✅ Soportado |
+| **2.2.0**          | **21**          | **✅ Actual (Recomendado)** |
 
 > **Nota:** Las versiones soportan Angular desde 20.0.0 hasta 21.x. Para versiones anteriores de Angular, consulte versiones anteriores de la librería.
 

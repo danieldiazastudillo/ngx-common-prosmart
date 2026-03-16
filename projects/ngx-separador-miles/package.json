@@ -5,6 +5,10 @@
     "@angular/common": ">=19.2.0",
     "@angular/core": ">=19.2.0"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/danieldiazastudillo/ngx-common-prosmart.git"
+  },
   "dependencies": {
     "tslib": "^2.3.0"
   },

@@ -21,6 +21,7 @@ A lightweight Angular directive for formatting numbers with thousands separators
 - ✅ Configurable decimal and thousands separators
 - ✅ Optional decimal support
 - ✅ Works seamlessly with Angular Reactive Forms
+- ✅ **NEW**: Experimental Signal Forms support (Angular 21+)
 - ✅ Signal-based configuration
 - ✅ Maintains cursor position during formatting
 - ✅ Tested and recommended for Angular 21.x projects
@@ -30,9 +31,9 @@ A lightweight Angular directive for formatting numbers with thousands separators
 | ngx-separador-miles | Angular | Estado |
 |---------------------|---------|--------|
 | 0.0.1 - 0.0.2 | 19.2.0+ | ✅ Soportado |
-| 0.0.3 | 19.2.0 - 21.x | ✅ Actual (Recomendado) |
-| 0.1.x | 22.x | 📅 Planeado |
-| 1.0.x | 23.x | 📅 Planeado |
+| 0.0.3 | 19.2.0 - 21.x | ✅ Soportado |
+| **1.0.x** | **19.2.0 - 21.x** | **✅ Actual (Recomendado)** |
+| 1.1.x | 22.x | 📅 Planeado |
 
 **Installation:**
 ```bash
@@ -60,13 +61,14 @@ import { SeparadorMilesAccessor } from 'ngx-separador-miles';
 An Angular library for validating and formatting Chilean RUT (Rol Único Tributario) with standalone components support.
 
 **Features:**
-- ✅ Real-time RUT formatting as user types (NEW in v1.10.0)
+- ✅ Real-time RUT formatting as user types
 - ✅ Input restriction: only numbers and letter 'K'
 - ✅ Automatic uppercase conversion for 'K'
 - ✅ RUT validation for reactive and template-driven forms
 - ✅ Automatic RUT formatting (12.345.678-K)
 - ✅ Standalone components, directives, and pipes
 - ✅ ControlValueAccessor for seamless form integration
+- ✅ **NEW**: Experimental Signal Forms support (Angular 21+)
 - ✅ Zero external dependencies (except Angular)
 - ✅ Fully typed TypeScript implementation
 
@@ -79,7 +81,9 @@ An Angular library for validating and formatting Chilean RUT (Rol Único Tributa
 | 1.7.0      | 19      | ✅ Soportado |
 | 1.8.0      | 20      | ✅ Soportado |
 | 1.9.0      | 21      | ✅ Soportado |
-| 1.10.0     | 21      | ✅ Actual (Recomendado) |
+| 1.10.0     | 21      | ✅ Soportado |
+| 2.1.0      | 21      | ✅ Soportado |
+| **2.2.0**  | **21**  | **✅ Actual (Recomendado)** |
 
 **Installation:**
 ```bash
